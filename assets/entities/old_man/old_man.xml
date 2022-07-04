@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+    <property type="sequence"/>
+</properties>
+
+<states>
+    <sequence id="idle" frames="1" speed="0" width="16" height="16">
+        <frame id="tile_0186"/>
+    </sequence>
+
+    <sequence id="walk_north" frames="4" speed="250" width="16" height="16">
+        <frame id="tile_0187"/>
+        <frame id="tile_0241"/>
+        <frame id="tile_0187"/>
+        <frame id="tile_0214"/>
+    </sequence>
+
+    <sequence id="walk_south" frames="4" speed="250" width="16" height="16">
+        <frame id="tile_0186"/>
+        <frame id="tile_0213"/>
+        <frame id="tile_0186"/>
+        <frame id="tile_0240"/>
+    </sequence>
+
+    <sequence id="walk_east" frames="4" speed="250" width="16" height="16">
+        <frame id="tile_0188"/>
+        <frame id="tile_0215"/>
+        <frame id="tile_0188"/>
+        <frame id="tile_0215"/>
+    </sequence>
+
+    <sequence id="walk_west" frames="4" speed="250" width="16" height="16" flip="true">
+        <frame id="tile_0188"/>
+        <frame id="tile_0215"/>
+        <frame id="tile_0188"/>
+        <frame id="tile_0215"/>
+    </sequence>
+</states>
+
+<textures>
+    <texture id="tile_0186" source="assets/entities/old_man/tile_0186"/>
+    <texture id="tile_0187" source="assets/entities/old_man/tile_0187"/>
+    <texture id="tile_0241" source="assets/entities/old_man/tile_0241"/>
+    <texture id="tile_0214" source="assets/entities/old_man/tile_0214"/>
+    <texture id="tile_0213" source="assets/entities/old_man/tile_0213"/>
+    <texture id="tile_0240" source="assets/entities/old_man/tile_0240"/>
+    <texture id="tile_0188" source="assets/entities/old_man/tile_0188"/>
+    <texture id="tile_0215" source="assets/entities/old_man/tile_0215"/>
+    <texture id="tile_0188" source="assets/entities/old_man/tile_0188"/>
+</textures>

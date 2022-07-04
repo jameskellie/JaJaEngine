@@ -1,0 +1,38 @@
+{
+    "folders":
+    [
+        {
+            "path": ".",
+            "file_exclude_patterns": ["*.sublime-project"],
+            "folder_exclude_patterns": ["build", "cmake"],
+        }
+    ],
+
+    "build_systems":
+    [
+        {
+            "name": "Build & Run",
+            "cmd": ["cmake --build ./build && ./build/source/JaJaEngine"],
+            "selector": "source.c++",
+            "shell": true,            
+        },
+
+        {
+            "name": "Build",
+            "cmd": ["cmake --build ./build"],
+            "selector": "source.c++",
+            "shell": true,            
+        }
+    ],
+
+    "debugger_configurations":
+    [
+        {
+            "name": "C++ lldb Debugger",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/source/JaJaEngine",
+            "args": [],
+        },
+    ],
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+    <property name="entityType"  entityType="PLAYER"/>
+    <property name="textureType" textureType="spritesheet"/>
+</properties>
+
+<states>
+    <sequence id="idle_north" row="2" flip="none"/>
+    <sequence id="idle_south" row="0" flip="none"/>
+    <sequence id="idle_east"  row="1" flip="horizontal"/>
+    <sequence id="idle_west"  row="1" flip="none"/>
+
+    <sequence id="walk_north" row="2" frames="4" animationSpeed="250" flip="none"/>
+    <sequence id="walk_south" row="0" frames="4" animationSpeed="250" flip="none"/>
+    <sequence id="walk_east"  row="1" frames="4" animationSpeed="250" flip="horizontal"/>
+    <sequence id="walk_west"  row="1" frames="4" animationSpeed="250" flip="none"/>
+</states>
+
+<textures>
+    <texture id="player" source="assets/entities/player/walk.png" width="16" height="16"/>
+</textures>

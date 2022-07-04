@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<maps>
+    <map id="forest" source="assets/maps/forest/forest.tmx"/>
+    <map id="city"   source="assets/maps/city/city.tmx"/>
+</maps>
