@@ -19,11 +19,7 @@ class Player : public Entity
 
     Vector2D lastPos;
 
-    bool movingHorizontally,
-         walkingUp,
-         walkingDown,
-         walkingLeft,
-         walkingRight;
+    bool movingHorizontally;
 
 public:
     Player(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties);

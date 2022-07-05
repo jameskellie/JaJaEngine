@@ -13,7 +13,6 @@ add_compile_options(
     -Wall
     -Wextra
     -Werror
-    -Wconversion
 )
 
 option(DEBUG "Debug Mode" ON)
@@ -28,5 +27,4 @@ else()
     )
 endif()
 
-add_subdirectory(libraries)
 add_subdirectory(source)

@@ -45,7 +45,7 @@ void Layer::Render(std::shared_ptr<Resources> resources, const Vector2D &adjuste
                 }
             }
 
-            int index = 0;
+            unsigned int index = 0;
 
             if (tilesets.size() > 1)
             {

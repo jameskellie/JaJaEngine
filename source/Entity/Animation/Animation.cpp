@@ -41,5 +41,5 @@ void Animation::Update()
     }
 
     // Determines the current frame of the animation, modulo loops it once it reaches the last frame
-    frame = (SDL_GetTicks() / states[state].animationSpeed) % states[state].frames;
+    frame = (int)((SDL_GetTicks64() / (unsigned long)states[state].animationSpeed) % (unsigned long)states[state].frames);
 }

@@ -8,7 +8,6 @@ add_library(Level
 
 target_link_libraries(Level
     PUBLIC
-    tinyxml2
     Map
     XMLParser
     Quadtree

@@ -1,8 +1,10 @@
 #ifndef VECTOR2D_H
 #define VECTOR2D_H
 
+#include <compare>
+
 // A simple data structure for storing 2 float values
-class Vector2D
+struct Vector2D
 {
 public:
     float x,

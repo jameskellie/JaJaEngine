@@ -44,7 +44,7 @@ std::unique_ptr<Map> XMLParser::ParseMap(std::shared_ptr<Resources> resources, c
         // Parse tilesets and properties
         if (e->Value() == std::string("tileset"))
         {
-            auto tileset = std::move(ParseTileset(e));
+            auto tileset = ParseTileset(e);
             resources->GetTextureManager()->Load(resources->GetEngine(), tileset->id, "assets/tilesets/" + tileset->id + ".png");
             tilesets.push_back(std::move(tileset));
         }

@@ -5,7 +5,6 @@ add_library(TextureManager
 
 target_link_libraries(TextureManager
     PUBLIC
-    tinyxml2
     Engine
     Camera
 )

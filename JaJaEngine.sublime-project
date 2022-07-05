@@ -1,4 +1,14 @@
 {
+    "settings":
+    {
+        "remember_open_files": false,
+        "hot_exit": false,
+        "word_wrap": true,
+        "tab_size": 4,
+        "translate_tabs_to_spaces": true,
+        "detect_indentation": false,
+    },
+
     "folders":
     [
         {
@@ -12,14 +22,14 @@
     [
         {
             "name": "Build & Run",
-            "cmd": ["cmake --build ./build && ./build/source/JaJaEngine"],
+            "cmd": ["cmake --build ${project_path}/build && ${project_path}/build/source/JaJaEngine"],
             "selector": "source.c++",
             "shell": true,            
         },
 
         {
             "name": "Build",
-            "cmd": ["cmake --build ./build"],
+            "cmd": ["cmake --build ${project_path}/build"],
             "selector": "source.c++",
             "shell": true,            
         }
@@ -31,7 +41,7 @@
             "name": "C++ lldb Debugger",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/build/source/JaJaEngine",
+            "program": "${project_path}/build/source/JaJaEngine",
             "args": [],
         },
     ],
