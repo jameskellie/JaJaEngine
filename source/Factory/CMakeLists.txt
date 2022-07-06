@@ -6,7 +6,6 @@ add_library(Factory
 target_link_libraries(Factory
     PUBLIC
     Entity
-    tinyxml2
 )
 
 target_include_directories(Factory

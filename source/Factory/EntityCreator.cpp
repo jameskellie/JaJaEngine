@@ -5,6 +5,8 @@
 
 #include "tinyxml2.h"
 
+#include <vector>
+
 std::unordered_map<std::string, std::function<std::shared_ptr<Entity>(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)>> EntityCreator::entities;
 
 void EntityCreator::Register(const std::string id, std::function<std::shared_ptr<Entity>(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)> entity)

@@ -27,4 +27,5 @@ else()
     )
 endif()
 
+add_subdirectory(libraries)
 add_subdirectory(source)

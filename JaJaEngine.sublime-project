@@ -21,15 +21,22 @@
     "build_systems":
     [
         {
+            "name": "Clean",
+            "cmd": ["cd ${project_path} && rm -r build/* && cd build/ && cmake -DCMAKE_CXX_COMPILER=clang++ .. -Wno-dev"],
+            "selector": "source.c++",
+            "shell": true,            
+        },
+
+        {
             "name": "Build & Run",
-            "cmd": ["cmake --build ${project_path}/build && ${project_path}/build/source/JaJaEngine"],
+            "cmd": ["cd ${project_path} && cmake --build ${project_path}/build && cd ${project_path} && build/source/JaJaEngine"],
             "selector": "source.c++",
             "shell": true,            
         },
 
         {
             "name": "Build",
-            "cmd": ["cmake --build ${project_path}/build"],
+            "cmd": ["cd ${project_path} && cmake --build ${project_path}/build"],
             "selector": "source.c++",
             "shell": true,            
         }
