@@ -5,6 +5,7 @@ add_library(TextureManager
 
 target_link_libraries(TextureManager
     PUBLIC
+    SDL2::Image
     Engine
     Camera
 )

@@ -2,7 +2,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 find_package(SDL2       REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf   REQUIRED)
-find_package(TinyXML2   REQUIRED)
 
 include_directories(
     ${SDL2_INCLUDE_DIRS}
@@ -29,7 +28,7 @@ target_link_libraries(${PROJECT_NAME}
     SDL2::Main
     SDL2::Image
     SDL2::TTF
-    ${TinyXML2_LIBRARY}
+    tinyxml2
 
     Camera
     Entity
