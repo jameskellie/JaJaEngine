@@ -72,8 +72,8 @@ void Level::FillQuadtree(std::shared_ptr<Quadtree> quadtree)
 void Level::Render(std::shared_ptr<Resources> resources, std::shared_ptr<Camera> camera, const bool under)
 {
     Vector2D tileDimensions  = maps[currentMap]->GetTileDimensions();
-    Vector2D adjustedRows    = {camera->viewBox->x / tileDimensions.x, (camera->viewBox->w + camera->viewBox->x) / tileDimensions.x};
-    Vector2D adjustedColumns = {camera->viewBox->y / tileDimensions.y, (camera->viewBox->h + camera->viewBox->y) / tileDimensions.y};
+    Vector2D adjustedRows    = {camera->viewBox->x / tileDimensions.x, (camera->viewBox->x + camera->viewBox->w) / tileDimensions.x};
+    Vector2D adjustedColumns = {camera->viewBox->y / tileDimensions.y, (camera->viewBox->y + camera->viewBox->h) / tileDimensions.y};
 
     maps[currentMap]->Render(resources, adjustedRows, adjustedColumns, under);
 }

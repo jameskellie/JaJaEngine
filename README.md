@@ -10,7 +10,6 @@ The engine features a dynamic XML parsing system that allows for all properties,
 1. sdl2       2.0.22-2
 2. sdl2_image 2.0.5-2
 3. sdl2_ttf   2.0.18-1
-4. tinyxml2   9.0.0-1
 
 ### Build Instructions:
 (First time)
@@ -19,5 +18,5 @@ The engine features a dynamic XML parsing system that allows for all properties,
 
 (Subsequent times)
 1. Navigate to root from a terminal
-2. Run "cmake --build ./build"   to build
+2. Run "cmake --build ./build"     to build
 3. Run "./build/source/JaJaEngine" to run

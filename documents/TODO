@@ -1,2 +1,11 @@
 TODO:
 
+dynamically load/entities from XML
+
+add entity support to quadtree
+
+dynamic aspect ratios
+    -current idea is to support a static amount, i.e. 16:9, 16:10, 21:9, and 4:3 by always making maps big enough for all of them
+    -if the user's AR doesn't fit any of those, choose the closest one
+
+save files

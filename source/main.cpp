@@ -46,11 +46,11 @@ int main(int argc, char *argv[])
 
     static Registrar<Player> registrar("PLAYER"); // TODO: Put this in a level-specific XML so all entities needed for a level are registered
     // Storage of all entities currently created
-    std::vector<std::shared_ptr<Entity>> entities = EntityCreator::ParseEntities("assets/entities/player/player.xml", quadtree);
+    auto entities = EntityCreator::ParseEntities("assets/entities/player/player.xml", quadtree);
 
     // Camera & related setup
     auto camera = std::make_shared<Camera>(SDLProperties);
-    camera   ->SetTarget(entities[0]->GetOrigin());
+    camera->SetTarget(entities[0]->GetOrigin());
     resources->GetTextureManager()->SetCamera(camera);
 
     while (resources->GetEngine()->IsRunning())
@@ -61,27 +61,35 @@ int main(int argc, char *argv[])
         // Timing
         resources->GetEngine()->UpdateDeltaTime();
 
-        // Clear window
-        SDL_SetRenderDrawColor(resources->GetEngine()->GetRenderer(), 0, 0, 0, 255);
-        SDL_RenderClear(resources->GetEngine()->GetRenderer());
-
-        level->Render(resources, camera); // Draw map layers under player
-
+        // Update
         for (auto i : entities)
         {
-            i->Update(resources, quadtree); // Update
-            i->Render(resources);           // Render
+            i->Update(resources, quadtree);
         }
-
-        level ->Render(resources, camera, false); // Draw map layers over player
 
         // Move camera
         camera->Update(level->GetCurrentMap()->GetMapDimensions(), level->GetCurrentMap()->GetTileDimensions());
 
+        // Clear window
+        SDL_SetRenderDrawColor(resources->GetEngine()->GetRenderer(), 0, 0, 0, 255);
+        SDL_RenderClear(resources->GetEngine()->GetRenderer());
+
+        // Render map layers under player
+        level->Render(resources, camera);
+
+        // Render
+        for (auto i : entities)
+        {
+            i->Render(resources);
+        }
+
+        // Render map layers over player
+        level->Render(resources, camera, false);
+
         // Quadtree
         quadtree->Clear();
         quadtree->SetBounds(camera);
-        level   ->FillQuadtree(quadtree);
+        level->FillQuadtree(quadtree);
         // quadtree->DrawTree(resources, camera); // DEBUG: Uncomment to see the quadtree as an overlay
 
         SDL_RenderPresent(resources->GetEngine()->GetRenderer());
