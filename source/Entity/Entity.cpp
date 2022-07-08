@@ -10,7 +10,7 @@ Entity::Entity(std::shared_ptr<Subject> subject, const TextureProperties &proper
     transform = std::make_unique<Transform>(properties.x, properties.y);
     origin    = std::make_unique<Vector2D>();
 
-    SetOrigin(properties.x, properties.y);
+    SetOrigin(Vector2D(properties.x, properties.y));
 }
 
 void Entity::Update(std::shared_ptr<void> collision)
@@ -20,8 +20,14 @@ void Entity::Update(std::shared_ptr<void> collision)
     CollisionReaction();
 }
 
-void Entity::SetOrigin(const float x, const float y)
+void Entity::SetPosition(const Vector2D &position)
 {
-    origin->x = x + tileWidth  / 2.0f;
-    origin->y = y + tileHeight / 2.0f;
+    transform->x = position.x;
+    transform->y = position.y;
+}
+
+void Entity::SetOrigin(const Vector2D &position)
+{
+    origin->x = position.x + tileWidth  / 2.0f;
+    origin->y = position.y + tileHeight / 2.0f;
 }

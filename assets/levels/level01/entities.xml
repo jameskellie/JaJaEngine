@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entities>
-    <entity type="player" source/>
+    <entity type="PLAYER" source="assets/entities/player/player.xml"/>
 </entities>

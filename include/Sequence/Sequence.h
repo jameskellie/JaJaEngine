@@ -17,14 +17,11 @@ struct Sequence
     float scaleX,
           scaleY;
 
-    // Texture ID
-    std::string      id;
     SDL_RendererFlip flip;
 
     Sequence() {}
 
-    Sequence(const std::string      id,
-             const int              row,
+    Sequence(const int              row,
              const int              frames         = 1,
              const int              animationSpeed = 0,
              const SDL_RendererFlip flip           = SDL_FLIP_NONE,
@@ -37,7 +34,6 @@ struct Sequence
         , opacity       (opacity)
         , scaleX        (scaleX)
         , scaleY        (scaleY)
-        , id            (id)
         , flip          (flip) {}
 };
 

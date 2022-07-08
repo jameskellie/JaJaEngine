@@ -52,7 +52,8 @@ public:
     inline std::shared_ptr<Vector2D> GetOrigin() { return origin; }
 
     // Setters
-    void SetOrigin(const float x, const float y);
+    void SetPosition(const Vector2D &position);
+    void SetOrigin  (const Vector2D &position);
 };
 
 #endif // ENTITY_H

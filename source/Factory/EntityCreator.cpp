@@ -1,10 +1,12 @@
 #include "EntityCreator.h"
+#include "EntityRegister.h"
 
 #include "Sequence/Sequence.h"
 #include "TextureProperties/TextureProperties.h"
 
 #include "tinyxml2.h"
 
+#include <iostream>
 #include <vector>
 
 std::unordered_map<std::string, std::function<std::shared_ptr<Entity>(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)>> EntityCreator::entities;
@@ -24,9 +26,8 @@ std::shared_ptr<Entity> EntityCreator::FactoryMethod(const std::string id, std::
     return entity;
 }
 
-std::vector<std::shared_ptr<Entity>> EntityCreator::ParseEntities(const std::string source, std::shared_ptr<Subject> subject)
+std::shared_ptr<Entity> EntityCreator::ParseEntity(const char *source, std::shared_ptr<Subject> subject)
 {
-    std::vector<std::shared_ptr<Entity>>      returnEntities;
     std::unordered_map<std::string, Sequence> states;
 
     std::string entityType,
@@ -38,9 +39,13 @@ std::vector<std::shared_ptr<Entity>> EntityCreator::ParseEntities(const std::str
           height = 0.0f;
                 
     tinyxml2::XMLDocument xml;
-    xml.LoadFile(source.c_str());
+    xml.LoadFile(source);
 
-    if (xml.Error()) return returnEntities;
+    if (xml.Error())
+    {
+        std::cerr << "Failed to load " << source << std::endl;
+        return nullptr;
+    }
 
     for (auto e = xml.RootElement(); e != nullptr; e = e->NextSiblingElement())
     {
@@ -80,8 +85,7 @@ std::vector<std::shared_ptr<Entity>> EntityCreator::ParseEntities(const std::str
                     else if (flipString == "vertical")   flip = SDL_FLIP_VERTICAL;
                     else                                 flip = (SDL_RendererFlip)(SDL_FLIP_VERTICAL | SDL_FLIP_HORIZONTAL);
 
-                    // TODO: Why are we passing stateID here if we know stateID in terms for the first map arg
-                    states[stateID] = Sequence(stateID, row, frames, animationSpeed, flip, opacity, scaleX, scaleY);
+                    states[stateID] = Sequence(row, frames, animationSpeed, flip, opacity, scaleX, scaleY);
                 }
             }
         }
@@ -97,8 +101,36 @@ std::vector<std::shared_ptr<Entity>> EntityCreator::ParseEntities(const std::str
         }
     }
 
-    // TODO: starting coords should not be passed at this stage
-    returnEntities.push_back(FactoryMethod(entityType, subject, states, TextureProperties(textureID, 250.0f, 250.0f, width, height)));
+    return FactoryMethod(entityType, subject, states, TextureProperties(textureID, 0.0f, 0.0f, width, height));
+}
+
+std::vector<std::shared_ptr<Entity>> EntityCreator::ParseEntities(const std::string source, std::shared_ptr<Subject> subject)
+{
+    EntityCreator::Clean();
+    
+    std::vector<std::shared_ptr<Entity>> returnEntities;
+
+    tinyxml2::XMLDocument xml;
+    xml.LoadFile(source.c_str());
+
+    if (xml.Error())
+    {
+        std::cerr << "Failed to load " << source << std::endl;
+        return returnEntities;
+    }
+
+    auto e = xml.RootElement();
+
+    for (auto o = e->FirstChildElement("entity"); o != nullptr ; o = o->NextSiblingElement("entity"))
+    {
+        RegisterEntity(o->Attribute("type"));
+
+        auto entity = ParseEntity(o->Attribute("source"), subject);
+
+        if (entity == nullptr) continue;
+
+        returnEntities.push_back(entity);
+    }
 
     return returnEntities;
 }

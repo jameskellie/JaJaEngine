@@ -27,8 +27,7 @@ void Player::CollisionReaction()
     }
     else
     {
-        transform->x = collision->setMapPos.x;
-        transform->y = collision->setMapPos.y;
+        SetPosition(collision->setMapPos);
     }
 }
 
@@ -115,7 +114,7 @@ void Player::Update(std::shared_ptr<Resources> resources, std::shared_ptr<Quadtr
     transform->TranslateY(rigidBody->GetPosition().y);
     quadtree->Search(GenerateHitbox(), DEFAULT_LIST);
 
-    SetOrigin(transform->x, transform->y);
+    SetOrigin(Vector2D(transform->x, transform->y));
 
     animation->Update();
 }

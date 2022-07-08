@@ -1,7 +1,7 @@
 #include "Camera.h"
+#include "Entity.h"
 #include "Factory.h"
 #include "Level.h"
-#include "Player.h"
 #include "Quadtree.h"
 #include "Resources.h"
 
@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 {
     // Bypass -Werror warning
     (void)argc; (void)argv;
-
+    
     SDL_Properties SDLProperties
     {
         "JaJaEngine",                                         // WINDOW_TITLE
@@ -44,9 +44,9 @@ int main(int argc, char *argv[])
     if (!resources->GetTextureManager()->ParseTextures(resources->GetEngine(), "assets/levels/level01/textures.xml"))
         std::cerr << "Failed to load textures.xml" << std::endl;
 
-    static Registrar<Player> registrar("PLAYER"); // TODO: Put this in a level-specific XML so all entities needed for a level are registered
-    // Storage of all entities currently created
-    auto entities = EntityCreator::ParseEntities("assets/entities/player/player.xml", quadtree);
+    // Storage of all entities currently created - index [0] should always be the player
+    auto entities = EntityCreator::ParseEntities("assets/levels/level01/entities.xml", quadtree);
+    entities[0]->SetPosition(Vector2D(250.0f, 250.0f)); // TODO: Put in/read from savefile
 
     // Camera & related setup
     auto camera = std::make_shared<Camera>(SDLProperties);
@@ -96,7 +96,6 @@ int main(int argc, char *argv[])
     }
 
     resources->GetTextureManager()->Clean();
-    EntityCreator::Clean();
     level->Clean();
     
     return 0;
