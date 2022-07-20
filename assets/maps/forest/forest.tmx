@@ -188,7 +188,7 @@
   <object id="14" x="368" y="192" width="16" height="16"/>
   <object id="15" x="343" y="144" width="17" height="16"/>
   <object id="16" x="327" y="128" width="16" height="16"/>
-  <object id="17" x="274" y="128" width="11" height="16"/>
+  <object id="17" x="272" y="128" width="16" height="16"/>
   <object id="20" x="224" y="0" width="32" height="16">
    <properties>
     <property name="load" value="city"/>

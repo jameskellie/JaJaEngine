@@ -1,4 +1,6 @@
 add_subdirectory(Animation)
+add_subdirectory(Object)
+add_subdirectory(OldMan)
 add_subdirectory(Player)
 
 add_library(Entity
@@ -9,6 +11,8 @@ add_library(Entity
 target_link_libraries(Entity
     INTERFACE
     Animation
+    Object
+    OldMan
     Player
 )
 

@@ -1,5 +1,6 @@
 #include "Player.h"
 
+#include "Level.h"
 #include "Quadtree.h"
 #include "Resources.h"
 
@@ -12,21 +13,21 @@ Player::Player(std::shared_ptr<Subject> subject, const std::unordered_map<std::s
     Idle();
 }
 
-void Player::CollisionReaction()
+void Player::CollisionReaction(std::shared_ptr<Level> level)
 {
-    SDL_FRect hitbox = GenerateHitbox(); // TODO: This should probably be optimised out
-
     if (collision->loadZone == "")
     {
-        if (movingHorizontally) transform->x = (lastPos.x + hitboxMin.x < collision->hitbox.x)
-                                             ? collision->hitbox.x - hitbox.w - hitboxMin.x
-                                             : collision->hitbox.x + collision->hitbox.w - hitboxMin.x;
-        else                    transform->y = (lastPos.y + hitboxMax.x < collision->hitbox.y)
-                                             ? collision->hitbox.y - hitbox.h - hitboxMax.x
-                                             : collision->hitbox.y + collision->hitbox.h - hitboxMax.x;
+        // TODO: North collisions shake for some reason
+        if (movingHorizontally) transform->x = (lastPos.x + (hitboxMin.x + hitboxMax.x) <= collision->hitbox.x)
+                                             ? collision->hitbox.x - (hitboxMin.x + hitboxMax.x)
+                                             : (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
+        else                    transform->y = (lastPos.y + (hitboxMin.y + hitboxMax.y) <= collision->hitbox.y)
+                                             ? collision->hitbox.y - (hitboxMin.y + hitboxMax.y)
+                                             : (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
     }
     else
     {
+        level->SetMap(collision->loadZone);
         SetPosition(collision->setMapPos);
     }
 }
@@ -91,35 +92,39 @@ void Player::Movement(std::shared_ptr<Resources> resources)
     rigidBody->ApplyForceY(runSpeed * verticalForce);
 }
 
-void Player::Update(std::shared_ptr<Resources> resources, std::shared_ptr<Quadtree> quadtree)
+void Player::Update(std::shared_ptr<Resources> resources)
 {
+    movingHorizontally = !movingHorizontally;
     Movement(resources);
-
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
 
-    // Need this for recursion in quadtree function; cannot default initialise a non-const reference argument
-    std::list<std::shared_ptr<Object>> DEFAULT_LIST;
-
     // X Collision
-    movingHorizontally = true;
-    lastPos.x = transform->x;
-    transform->TranslateX(rigidBody->GetPosition().x);
-    quadtree->Search(GenerateHitbox(), DEFAULT_LIST);
-    
-    DEFAULT_LIST.clear();
-
+    if (movingHorizontally == true)
+    {
+        lastPos.x = transform->x;
+        transform->TranslateX(rigidBody->GetPosition().x);
+    }
     // Y Collision
-    movingHorizontally = false;
-    lastPos.y = transform->y;
-    transform->TranslateY(rigidBody->GetPosition().y);
-    quadtree->Search(GenerateHitbox(), DEFAULT_LIST);
+    else
+    {
+        lastPos.y = transform->y;
+        transform->TranslateY(rigidBody->GetPosition().y);        
+    }
 
-    SetOrigin(Vector2D(transform->x, transform->y));
-
+    SetOrigin(Vector2D(lastPos.x, lastPos.y));
     animation->Update();
+    UpdateHitbox();
 }
 
 void Player::Render(std::shared_ptr<Resources> resources)
 {
     animation->Draw(resources, transform->x, transform->y, tileWidth, tileHeight);
+}
+
+void Player::UpdateHitbox()
+{
+    hitbox.x = transform->x + hitboxMin.x;
+    hitbox.y = transform->y + hitboxMin.y;
+    hitbox.w = hitboxMax.x;
+    hitbox.h = hitboxMax.y;
 }

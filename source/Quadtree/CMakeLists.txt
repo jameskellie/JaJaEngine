@@ -5,8 +5,9 @@ add_library(Quadtree
 
 target_link_libraries(Quadtree
     PUBLIC
-    Resources
     Camera
+    Entity
+    Resources
 )
 
 target_include_directories(Quadtree

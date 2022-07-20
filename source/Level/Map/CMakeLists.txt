@@ -6,6 +6,7 @@ add_library(Map
 
 target_link_libraries(Map
     PUBLIC
+    Object
     Resources
 )
 

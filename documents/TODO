@@ -1,6 +1,10 @@
 TODO:
 
-add entity support to quadtree
+entity collision
+
+correct entity depth rendering
+
+make entities load/unload when map changes based on whether they should actually be there
 
 add support for animation frame sprites
 
@@ -9,3 +13,5 @@ dynamic aspect ratios
     -if the user's AR doesn't fit any of those, choose the closest one
 
 save files
+
+dialogue/text popups

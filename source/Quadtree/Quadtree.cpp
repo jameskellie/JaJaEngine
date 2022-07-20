@@ -1,18 +1,20 @@
 #include "Quadtree.h"
 
 #include "Camera.h"
+#include "Entity.h"
 #include "Resources.h"
 
 #include "SDL_render.h"
 
 #include <iostream>
 
-void Quadtree::Notify()
+void Quadtree::Notify(std::shared_ptr<Level> level)
 {
-    std::list<Observer *>::iterator iterator = observers.begin();
+    std::list<Entity *>::iterator iterator = observers.begin();
     while (iterator != observers.end())
     {
-        (*iterator)->Update(collision);
+        (*iterator)->Update(collisionA, level);
+        (*iterator)->Update(collisionB, level);
         ++iterator;
     }
 }
@@ -23,52 +25,44 @@ Quadtree::Quadtree(const Vector2D &min, const Vector2D &max, const int depth)
     , mid  ({(min.x + max.x) / 2.0f, (min.y + max.y) / 2.0f})
     , depth(depth) {}
 
-int Quadtree::Inside(std::shared_ptr<Object> object)
+Quadrant Quadtree::Inside(const SDL_FRect &hitbox)
 {
     // Where is the object relative to the quadtree?
-    int index = -1;
+    Quadrant index = Quadrant::NONE;
 
-    bool top  = object->hitbox.y < mid.y && object->hitbox.y + object->hitbox.h < mid.y, // Wholly in the top half
-         left = object->hitbox.x < mid.x && object->hitbox.x + object->hitbox.w < mid.x; // Wholly in the left half
+    bool top  = hitbox.y < mid.y && hitbox.y + hitbox.h < mid.y, // Wholly in the top half
+         left = hitbox.x < mid.x && hitbox.x + hitbox.w < mid.x; // Wholly in the left half
 
-    if      ( left &&  top) index = 0;
-    else if (!left &&  top) index = 1;
-    else if ( left && !top) index = 2;
-    else if (!left && !top) index = 3;
+    if      ( left &&  top) index = Quadrant::NW;
+    else if (!left &&  top) index = Quadrant::NE;
+    else if ( left && !top) index = Quadrant::SW;
+    else if (!left && !top) index = Quadrant::SE;
 
-    bool xOverlap = object->hitbox.x <= mid.x && object->hitbox.x + object->hitbox.w >= mid.x, // On a vertical line
-         yOverlap = object->hitbox.y <= mid.y && object->hitbox.y + object->hitbox.h >= mid.y; // On a horizontal line
+    bool xOverlap = hitbox.x <= mid.x && hitbox.x + hitbox.w >= mid.x, // On a vertical line
+         yOverlap = hitbox.y <= mid.y && hitbox.y + hitbox.h >= mid.y; // On a horizontal line
 
     if (xOverlap)
     {
-        if (yOverlap) index = -2; // In all four quadrants
-        else if (top) index = -3; // In the nw + ne quadrants
-        else          index = -4; // In the sw + se quadrants
+        if (yOverlap) index = Quadrant::ALL; // In all four quadrants
+        else if (top) index = Quadrant::NWNE; // In the nw + ne quadrants
+        else          index = Quadrant::SWSE; // In the sw + se quadrants
     }
     else if (yOverlap)
     {
-        if (left) index = -5; // In the nw + sw quadrants
-        else      index = -6; // In the ne + se quadrants
+        if (left) index = Quadrant::NWSW; // In the nw + sw quadrants
+        else      index = Quadrant::NESE; // In the ne + se quadrants
     }
 
     return index;
 }
 
-// TODO: This function is wasting resources if we assume all objects are unique by default
-// Furthermore, it should check if the object is inside an existing object, not just equal to it
-bool Quadtree::Match(std::shared_ptr<Object> object)
+bool Quadtree::Match(std::shared_ptr<Entity> objectA, std::shared_ptr<Entity> objectB)
 {
-    std::list<std::shared_ptr<Object>>::iterator iterator = objects.begin();
-    while (iterator != objects.end())
-    {
-        if (   (*iterator)->hitbox.x == object->hitbox.x
-            && (*iterator)->hitbox.y == object->hitbox.y
-            && (*iterator)->hitbox.w == object->hitbox.w
-            && (*iterator)->hitbox.h == object->hitbox.h)
-            return true;
-
-        ++iterator;
-    }
+    if (   objectA->hitbox.x == objectB->hitbox.x
+        && objectA->hitbox.y == objectB->hitbox.y
+        && objectA->hitbox.w == objectB->hitbox.w
+        && objectA->hitbox.h == objectB->hitbox.h)
+        return true;
 
     return false;
 }
@@ -82,24 +76,22 @@ void Quadtree::Subdivide()
     se = std::make_unique<Quadtree>(Vector2D({mid.x, mid.y}), Vector2D({max.x, max.y}), depth + 1);
 
     // Check which child quadrant every object in the current node should move into, then place it there
-    std::list<std::shared_ptr<Object>>::iterator iterator = objects.begin();
+    std::list<std::shared_ptr<Entity>>::iterator iterator = objects.begin();
     while (iterator != objects.end())
     {
-        int index = Inside((*iterator));
+        Quadrant index = Inside((*iterator)->hitbox);
 
-        if      (index == 0) nw->Insert(*iterator);
-        else if (index == 1) ne->Insert(*iterator);
-        else if (index == 2) sw->Insert(*iterator);
-        else if (index == 3) se->Insert(*iterator);
-        if      (index > -1) iterator = objects.erase(iterator);
-        else                 ++iterator; // Keep the objects that didn't fit into any here
+        if      (index == Quadrant::NW) nw->Insert(*iterator);
+        else if (index == Quadrant::NE) ne->Insert(*iterator);
+        else if (index == Quadrant::SW) sw->Insert(*iterator);
+        else if (index == Quadrant::SE) se->Insert(*iterator);
+        if      (index >  Quadrant::NONE) iterator = objects.erase(iterator);
+        else                            ++iterator; // Keep the objects that didn't fit into any here
     }
 }
 
-void Quadtree::Insert(std::shared_ptr<Object> object)
+void Quadtree::Insert(std::shared_ptr<Entity> object)
 {
-    // if (Match(object)) return; // TODO: See Match() function comment
-
     // Don't add the object to the tree if it's not on the screen
     if (   object->hitbox.x + object->hitbox.w < min.x
         || object->hitbox.y + object->hitbox.h < min.y
@@ -107,16 +99,16 @@ void Quadtree::Insert(std::shared_ptr<Object> object)
         || object->hitbox.y > max.y)
         return;
 
-    int index = Inside(object);
+    Quadrant index = Inside(object->hitbox);
 
     // Don't place an object in this node if it has children nodes, unless...
     if (nw != nullptr)
     {
-        if      (index == 0) nw->Insert(object);
-        else if (index == 1) ne->Insert(object);
-        else if (index == 2) sw->Insert(object);
-        else if (index == 3) se->Insert(object);
-        if      (index <  0) objects.push_back(object);
+        if      (index == Quadrant::NW)   nw->Insert(object);
+        else if (index == Quadrant::NE)   ne->Insert(object);
+        else if (index == Quadrant::SW)   sw->Insert(object);
+        else if (index == Quadrant::SE)   se->Insert(object);
+        if      (index <= Quadrant::NONE) objects.push_back(object);
 
         return;
     }
@@ -129,75 +121,91 @@ void Quadtree::Insert(std::shared_ptr<Object> object)
     }
 }
 
-void Quadtree::Search(const SDL_FRect &object, std::list<std::shared_ptr<Object>> &returnObjects)
+void Quadtree::Search(Entity *object, std::list<std::shared_ptr<Entity>> &returnObjects)
 {
-    int index = Inside(std::make_unique<Object>(object));
+    Quadrant index = Inside(object->hitbox);
 
     if (nw != nullptr)
     {
-        if      (index ==  0) nw->Search(object, returnObjects);
-        else if (index ==  1) ne->Search(object, returnObjects);
-        else if (index ==  2) sw->Search(object, returnObjects);
-        else if (index ==  3) se->Search(object, returnObjects);
-        else if (index == -2) // Need to search all quadrants the object is touching
+        if      (index == Quadrant::NW) nw->Search(object, returnObjects);
+        else if (index == Quadrant::NE) ne->Search(object, returnObjects);
+        else if (index == Quadrant::SW) sw->Search(object, returnObjects);
+        else if (index == Quadrant::SE) se->Search(object, returnObjects);
+        else if (index == Quadrant::ALL) // Need to search all quadrants the object is touching
         {
             nw->Search(object, returnObjects);
             ne->Search(object, returnObjects);
             sw->Search(object, returnObjects);
             se->Search(object, returnObjects);
         }
-        else if (index == -3)
+        else if (index == Quadrant::NWNE)
         {
             nw->Search(object, returnObjects);
             ne->Search(object, returnObjects);
         }
-        else if (index == -4)
+        else if (index == Quadrant::SWSE)
         {
             sw->Search(object, returnObjects);
             se->Search(object, returnObjects);
         }
-        else if (index == -5)
+        else if (index == Quadrant::NWSW)
         {
             nw->Search(object, returnObjects);
             sw->Search(object, returnObjects);
         }
-        else if (index == -6)
+        else if (index == Quadrant::NESE)
         {
             ne->Search(object, returnObjects);
             se->Search(object, returnObjects);
         }
     }
 
-    std::list<std::shared_ptr<Object>>::iterator iterator = objects.begin();
+    // Adds every object in the same quadrant as the input to a return vector
+    std::list<std::shared_ptr<Entity>>::iterator iterator = objects.begin();
     while (iterator != objects.end())
     {
         returnObjects.push_back(*iterator);
         ++iterator;
     }
+}
 
-    if (observers.size() > 0)
+void Quadtree::CheckCollisions(std::shared_ptr<Level> level)
+{
+    // Need to use observers list not objects list because observers is the entities, objects includes map bounds
+    std::list<std::shared_ptr<Entity>> returnObjects;
+    std::list<Entity *>::iterator iterator = observers.begin();
+    while (iterator != observers.end())
     {
-        iterator = returnObjects.begin();
-        while (iterator != returnObjects.end())
+        Search(*iterator, returnObjects);
+
+        // Only run this routine from root
+        if (observers.size() > 0)
         {
-            if (SDL_HasIntersectionF(&(object), &((*iterator)->hitbox)))
+            std::list<std::shared_ptr<Entity>>::iterator returnObjectsIterator = returnObjects.begin();
+            while (returnObjectsIterator != returnObjects.end())
             {
-                collision = *iterator;
-                Notify();
+                // Only notify the colliding observers
+                if (SDL_HasIntersectionF(&((*iterator)->hitbox), &((*returnObjectsIterator)->hitbox)))
+                {
+                    (*iterator)->Update(*returnObjectsIterator, level);
+                }
+
+                ++returnObjectsIterator;
             }
 
-            ++iterator;
+            // DEBUG: Uncomment to print nearby objects to console
+            // iterator = returnObjects.begin();
+            // std::cout << "nearby: "<<  std::endl;
+            // while (iterator != returnObjects.end())
+            // {
+            //     std::cout << (*iterator)->hitbox.x << " " << (*iterator)->hitbox.y << " " << (*iterator)->hitbox.w << " " << (*iterator)->hitbox.h << std::endl;
+            //     ++iterator;
+            // }
+            // std::cout << std::endl;
         }
 
-        // DEBUG: Uncomment to print nearby objects to console
-        // iterator = returnObjects.begin();
-        // std::cout << "nearby: "<<  std::endl;
-        // while (iterator != returnObjects.end())
-        // {
-        //     std::cout << (*iterator)->hitbox.x << " " << (*iterator)->hitbox.y << " " << (*iterator)->hitbox.w << " " << (*iterator)->hitbox.h << std::endl;
-        //     ++iterator;
-        // }
-        // std::cout << std::endl;
+        returnObjects.clear();
+        ++iterator;
     }
 }
 
@@ -215,7 +223,7 @@ void Quadtree::DrawTree(std::shared_ptr<Resources> resources, std::shared_ptr<Ca
         se->DrawTree(resources, camera);
     }
 
-    std::list<std::shared_ptr<Object>>::iterator iterator = objects.begin();
+    std::list<std::shared_ptr<Entity>>::iterator iterator = objects.begin();
     while (iterator != objects.end())
     {
         if ((*iterator)->hitbox.x != -1)

@@ -2,9 +2,9 @@
 #define MAP_H
 
 #include "Layer.h"
+#include "Object.h"
 #include "Tileset.h"
 
-#include "Object/Object.h"
 #include "Vector2D/Vector2D.h"
 
 #include <memory>

@@ -2,10 +2,9 @@
 
 #include "Layer.h"
 #include "Map.h"
+#include "Object.h"
 #include "Resources.h"
 #include "Tileset.h"
-
-#include "Object/Object.h"
 
 #include "tinyxml2.h"
 

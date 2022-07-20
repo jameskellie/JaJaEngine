@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entities>
     <entity type="PLAYER" source="assets/entities/player/player.xml"/>
+    <entity type="OLDMAN" source="assets/entities/old_man/old_man.xml"/>
 </entities>

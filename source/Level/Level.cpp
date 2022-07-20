@@ -7,24 +7,6 @@
 
 #include <iostream>
 
-Level::Level(std::shared_ptr<Subject> subject)
-    : subject(subject)
-{
-    this->subject->Attach(this);
-}
-
-void Level::Update(std::shared_ptr<void> collision)
-{
-    this->collision = std::static_pointer_cast<Object>(collision);
-
-    CollisionReaction();
-}
-
-void Level::CollisionReaction()
-{
-    if (collision->loadZone != "") SetMap(collision->loadZone);
-}
-
 bool Level::Load(std::shared_ptr<Resources> resources, const std::string id, const std::string source)
 {
     // Don't load the same map twice

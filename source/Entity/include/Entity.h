@@ -3,12 +3,12 @@
 
 #include "Transform.h"
 
-#include "Object/Object.h"
 #include "Observer/Subject.h"
 #include "TextureProperties/TextureProperties.h"
 
 #include <memory>
 
+class Level;
 class Quadtree;
 class Resources;
 
@@ -24,7 +24,7 @@ protected:
     };
 
     // Observer-related members
-    std::shared_ptr<Object>  collision;
+    std::shared_ptr<Entity>  collision;
     std::shared_ptr<Subject> subject;
 
     float tileWidth,
@@ -37,16 +37,23 @@ protected:
 
 public:
     // Observer-related functions
-    void Update(std::shared_ptr<void> collision) override;
+    void Update(std::shared_ptr<void> collision, std::shared_ptr<Level> level) override;
     inline void RemoveObserver() { subject->Detach(this); }
-    virtual void CollisionReaction() = 0;
+    virtual void CollisionReaction(std::shared_ptr<Level> level) = 0;
 
+    // TODO: Getter/Setter instead of public
+    SDL_FRect hitbox;
+    std::string loadZone;
+    Vector2D    setMapPos;
+
+    Entity() {}
+    Entity(const SDL_FRect &hitbox) : hitbox(hitbox) {}
     Entity(std::shared_ptr<Subject> subject, const TextureProperties &properties);
 
     virtual ~Entity() {}
-    virtual void      Update(std::shared_ptr<Resources> resources, std::shared_ptr<Quadtree> quadtree) = 0;
-    virtual void      Render(std::shared_ptr<Resources> resources)                                     = 0;
-    virtual SDL_FRect GenerateHitbox()                                                                 = 0;
+    virtual void Update(std::shared_ptr<Resources> resources) = 0;
+    virtual void Render(std::shared_ptr<Resources> resources) = 0;
+    virtual void UpdateHitbox()                               = 0;
 
     // Getters
     inline std::shared_ptr<Vector2D> GetOrigin() { return origin; }

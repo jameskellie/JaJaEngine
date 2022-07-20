@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     auto quadtree  = std::make_shared<Quadtree>(Vector2D({0, 0}),
                                                 Vector2D({(float)SDLProperties.TARGET_WIDTH,(float)SDLProperties.TARGET_HEIGHT}));
 
-    auto level = std::make_shared<Level>(quadtree);
+    auto level = std::make_shared<Level>();
 
     // Loads the following maps into memory
     if (!level->ParseMaps(resources, "assets/levels/level01/maps.xml"))
@@ -47,6 +47,12 @@ int main(int argc, char *argv[])
     // Storage of all entities currently created - index [0] should always be the player
     auto entities = EntityCreator::ParseEntities("assets/levels/level01/entities.xml", quadtree);
     entities[0]->SetPosition(Vector2D(250.0f, 250.0f)); // TODO: Put in/read from savefile
+    entities[1]->SetPosition(Vector2D(232.0f, 232.0f));
+    
+    for (auto i : entities)
+    {
+        quadtree->Insert(i);
+    }
 
     // Camera & related setup
     auto camera = std::make_shared<Camera>(SDLProperties);
@@ -61,11 +67,23 @@ int main(int argc, char *argv[])
         // Timing
         resources->GetEngine()->UpdateDeltaTime();
 
-        // Update
+        // The duplicate for(update)/quadtree calls may seem strange
+        // but it's to update and check collision of the X/Y planes independently
+        // Update X
         for (auto i : entities)
         {
-            i->Update(resources, quadtree);
+            i->Update(resources);
         }
+
+        quadtree->CheckCollisions(level);
+
+        // Update Y
+        for (auto i : entities)
+        {
+            i->Update(resources);
+        }
+
+        quadtree->CheckCollisions(level);
 
         // Move camera
         camera->Update(level->GetCurrentMap()->GetMapDimensions(), level->GetCurrentMap()->GetTileDimensions());

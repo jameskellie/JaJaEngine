@@ -7,7 +7,7 @@ target_link_libraries(Player
     PUBLIC
     Animation
     Entity
-    Quadtree
+    Level
 )
 
 target_include_directories(Player

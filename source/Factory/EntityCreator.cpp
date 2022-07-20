@@ -57,7 +57,7 @@ std::shared_ptr<Entity> EntityCreator::ParseEntity(const char *source, std::shar
 
                 if      (propertyName == "entityType")  entityType  = o->Attribute("entityType");
                 else if (propertyName == "textureType") textureType = o->Attribute("textureType");
-            }
+            }        
         }
         else if (e->Value() == std::string("states"))
         {
@@ -65,19 +65,19 @@ std::shared_ptr<Entity> EntityCreator::ParseEntity(const char *source, std::shar
             {
                 if (textureType == "spritesheet")
                 {
-                    std::string stateID   = o->Attribute("id");
+                    std::string stateID = o->Attribute("id");
 
-                    int row               = o->IntAttribute("row"),
-                        frames            = o->IntAttribute("frames", 1),
-                        animationSpeed    = o->IntAttribute("animationSpeed", 0);
+                    int row            = o->IntAttribute("row"),
+                        frames         = o->IntAttribute("frames", 1),
+                        animationSpeed = o->IntAttribute("animationSpeed", 0);
 
-                    uint8_t opacity       = (uint8_t)(255 * o->FloatAttribute("opacity", 0));
-                            opacity       = (opacity == 0) ? 255 : opacity;
+                    uint8_t opacity = (uint8_t)(255 * o->FloatAttribute("opacity", 0));
+                            opacity = (opacity == 0) ? 255 : opacity;
 
-                    float scaleX          = o->FloatAttribute("scaleX", 1.0f),
-                          scaleY          = o->FloatAttribute("scaleY", 1.0f);
+                    float scaleX = o->FloatAttribute("scaleX", 1.0f),
+                          scaleY = o->FloatAttribute("scaleY", 1.0f);
 
-                    std::string flipString  = o->Attribute("flip");
+                    std::string flipString = o->Attribute("flip");
                     SDL_RendererFlip flip;
 
                     if      (flipString == "none")       flip = SDL_FLIP_NONE;

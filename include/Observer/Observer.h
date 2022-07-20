@@ -5,13 +5,13 @@
 
 #include <memory>
 
-struct Object;
+class Level;
 
 class Observer
 {
 public:
     virtual ~Observer() {}
-    virtual void Update(std::shared_ptr<void> collision) = 0;
+    virtual void Update(std::shared_ptr<void> collision, std::shared_ptr<Level> level) = 0;
 };
 
 #endif // OBSERVER_H

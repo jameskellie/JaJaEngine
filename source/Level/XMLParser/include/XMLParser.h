@@ -7,9 +7,9 @@
 
 class Layer;
 class Map;
+class Object;
 class Resources;
 
-struct Object;
 struct Tileset;
 
 namespace tinyxml2

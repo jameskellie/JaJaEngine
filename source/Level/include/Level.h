@@ -4,32 +4,19 @@
 #include "Map.h"
 #include "Resources.h"
 
-#include "Observer/Subject.h"
-
 #include <memory>
 #include <string>
 #include <unordered_map>
 
 class Quadtree;
 
-class Level : public Observer
+class Level
 {
-    // Observer-related members
-    std::shared_ptr<Object>  collision;
-    std::shared_ptr<Subject> subject;
-
     // All the maps that are part of this level
     std::unordered_map<std::string, std::shared_ptr<Map>> maps;
     std::string                                           currentMap;
 
 public:
-    // Observer-related functions
-    void Update(std::shared_ptr<void> collision) override;
-    inline void RemoveObserver() { subject->Detach(this); }
-    virtual void CollisionReaction();
-
-    Level(std::shared_ptr<Subject> subject);
-
     bool Load        (std::shared_ptr<Resources> resources, const std::string id, const std::string source);
     bool ParseMaps   (std::shared_ptr<Resources> resources, const std::string source);
     void Render      (std::shared_ptr<Resources> resources, std::shared_ptr<Camera> camera, const bool under = true);
