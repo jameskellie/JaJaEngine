@@ -1,7 +1,6 @@
 #include "Player.h"
 
 #include "Level.h"
-#include "Quadtree.h"
 #include "Resources.h"
 
 Player::Player(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)
@@ -17,7 +16,6 @@ void Player::CollisionReaction(std::shared_ptr<Level> level)
 {
     if (collision->loadZone == "")
     {
-        // TODO: North collisions shake for some reason
         if (movingHorizontally) transform->x = (lastPos.x + (hitboxMin.x + hitboxMax.x) <= collision->hitbox.x)
                                              ? collision->hitbox.x - (hitboxMin.x + hitboxMax.x)
                                              : (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
@@ -99,7 +97,7 @@ void Player::Update(std::shared_ptr<Resources> resources)
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
 
     // X Collision
-    if (movingHorizontally == true)
+    if (movingHorizontally)
     {
         lastPos.x = transform->x;
         transform->TranslateX(rigidBody->GetPosition().x);

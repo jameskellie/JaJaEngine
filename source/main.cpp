@@ -48,11 +48,6 @@ int main(int argc, char *argv[])
     auto entities = EntityCreator::ParseEntities("assets/levels/level01/entities.xml", quadtree);
     entities[0]->SetPosition(Vector2D(250.0f, 250.0f)); // TODO: Put in/read from savefile
     entities[1]->SetPosition(Vector2D(232.0f, 232.0f));
-    
-    for (auto i : entities)
-    {
-        quadtree->Insert(i);
-    }
 
     // Camera & related setup
     auto camera = std::make_shared<Camera>(SDLProperties);
@@ -61,6 +56,13 @@ int main(int argc, char *argv[])
 
     while (resources->GetEngine()->IsRunning())
     {
+        // Quadtree fill
+        level->FillQuadtree(quadtree);
+        for (auto i : entities)
+        {
+            quadtree->Insert(i);
+        }
+
         // Inputs
         resources->GetInputHandler()->Listen(resources->GetEngine());
 
@@ -104,11 +106,10 @@ int main(int argc, char *argv[])
         // Render map layers over player
         level->Render(resources, camera, false);
 
-        // Quadtree
+        // Quadtree reset
+        // quadtree->DrawTree(resources, camera); // DEBUG: Uncomment to see the quadtree as an overlay
         quadtree->Clear();
         quadtree->SetBounds(camera);
-        level->FillQuadtree(quadtree);
-        // quadtree->DrawTree(resources, camera); // DEBUG: Uncomment to see the quadtree as an overlay
 
         SDL_RenderPresent(resources->GetEngine()->GetRenderer());
     }

@@ -25,7 +25,7 @@ Quadtree::Quadtree(const Vector2D &min, const Vector2D &max, const int depth)
     , mid  ({(min.x + max.x) / 2.0f, (min.y + max.y) / 2.0f})
     , depth(depth) {}
 
-Quadrant Quadtree::Inside(const SDL_FRect &hitbox)
+Quadtree::Quadrant Quadtree::Inside(const SDL_FRect &hitbox)
 {
     // Where is the object relative to the quadtree?
     Quadrant index = Quadrant::NONE;
@@ -56,7 +56,7 @@ Quadrant Quadtree::Inside(const SDL_FRect &hitbox)
     return index;
 }
 
-bool Quadtree::Match(std::shared_ptr<Entity> objectA, std::shared_ptr<Entity> objectB)
+bool Quadtree::Match(Entity *objectA, std::shared_ptr<Entity> objectB)
 {
     if (   objectA->hitbox.x == objectB->hitbox.x
         && objectA->hitbox.y == objectB->hitbox.y
@@ -104,10 +104,10 @@ void Quadtree::Insert(std::shared_ptr<Entity> object)
     // Don't place an object in this node if it has children nodes, unless...
     if (nw != nullptr)
     {
-        if      (index == Quadrant::NW)   nw->Insert(object);
-        else if (index == Quadrant::NE)   ne->Insert(object);
-        else if (index == Quadrant::SW)   sw->Insert(object);
-        else if (index == Quadrant::SE)   se->Insert(object);
+        if      (index == Quadrant::NW) nw->Insert(object);
+        else if (index == Quadrant::NE) ne->Insert(object);
+        else if (index == Quadrant::SW) sw->Insert(object);
+        else if (index == Quadrant::SE) se->Insert(object);
         if      (index <= Quadrant::NONE) objects.push_back(object);
 
         return;
@@ -184,8 +184,8 @@ void Quadtree::CheckCollisions(std::shared_ptr<Level> level)
             std::list<std::shared_ptr<Entity>>::iterator returnObjectsIterator = returnObjects.begin();
             while (returnObjectsIterator != returnObjects.end())
             {
-                // Only notify the colliding observers
-                if (SDL_HasIntersectionF(&((*iterator)->hitbox), &((*returnObjectsIterator)->hitbox)))
+                // Only notify the colliding observers // TODO: There has to be a better way to avoid checking yourself than calling Match()...
+                if (SDL_HasIntersectionF(&((*iterator)->hitbox), &((*returnObjectsIterator)->hitbox)) && !Match(*iterator, *returnObjectsIterator))
                 {
                     (*iterator)->Update(*returnObjectsIterator, level);
                 }

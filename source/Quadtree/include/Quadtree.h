@@ -11,29 +11,29 @@ class Camera;
 class Entity;
 class Resources;
 
-// While it doesn't make a lot of real-world sense, having "NONE" be the middleground between
-// singular and multiple quadrants allows for easier code logic via < NONE being guaranteed to
-// be more than 1 quadrant and vice versa
-enum class Quadrant
-{
-    NWNE,
-    NWSW,
-    SWSE,
-    NESE,
-    ALL,
-    NONE,
-    NW,
-    NE,
-    SW,
-    SE
-};
-
 // A quadtree will reduce the amount of objects we need to check collision against,
 // although only somewhat. It will still check against objects far away if the object
 // is on a border line, or if the object you're checking against is on a border line.
 // Something like a spatial hashmap would be more efficient if performance becomes a problem.
 class Quadtree : public Subject
 {
+    // While it doesn't make a lot of real-world sense, having "NONE" be the middleground between
+    // singular and multiple quadrants allows for easier code logic via < NONE being guaranteed to
+    // be more than 1 quadrant and vice versa
+    enum class Quadrant
+    {
+        NWNE,
+        NWSW,
+        SWSE,
+        NESE,
+        ALL,
+        NONE,
+        NW,
+        NE,
+        SW,
+        SE
+    };
+
     static const int MAX_DEPTH   = 5;
     static const int MAX_OBJECTS = 10;
 
@@ -63,7 +63,7 @@ public:
     Quadtree(const Vector2D &min, const Vector2D &max, const int depth = 0);
 
     Quadrant Inside(const SDL_FRect &hitbox);
-    bool Match (std::shared_ptr<Entity> objectA, std::shared_ptr<Entity> objectB);
+    bool Match(Entity *objectA, std::shared_ptr<Entity> objectB);
     void Subdivide();
     void Insert(std::shared_ptr<Entity> object);
     void Search(Entity *object, std::list<std::shared_ptr<Entity>> &returnObjects);

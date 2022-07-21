@@ -1,8 +1,7 @@
 #include "OldMan.h"
 
-#include "Quadtree.h"
 #include "Resources.h"
-
+#include <iostream> // TODO: DELETE
 OldMan::OldMan(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)
     : Entity(subject, properties)
 {
@@ -17,22 +16,45 @@ void OldMan::CollisionReaction(std::shared_ptr<Level> level)
 
     if (collision->loadZone == "")
     {
-        if (movingHorizontally) transform->x = (lastPos.x + hitboxMin.x < collision->hitbox.x)
-                                             ? collision->hitbox.x - hitbox.w - hitboxMin.x
-                                             : collision->hitbox.x + collision->hitbox.w - hitboxMin.x;
-        else                    transform->y = (lastPos.y + hitboxMax.x < collision->hitbox.y)
-                                             ? collision->hitbox.y - hitbox.h - hitboxMax.x
-                                             : collision->hitbox.y + collision->hitbox.h - hitboxMax.x;
+        if (movingHorizontally)
+        {
+            if (lastPos.x + (hitboxMin.x + hitboxMax.x) <= collision->hitbox.x)
+            {
+                transform->x = collision->hitbox.x - (hitboxMin.x + hitboxMax.x);
+                std::cout << "1" << std::endl;
+            }
+            else
+            {
+                transform->x = (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
+                std::cout << "2" << std::endl;
+                std::cout << lastPos.x + (hitboxMin.x + hitboxMax.x) << " " << collision->hitbox.x << std::endl;
+            }
+        }
+        else
+        {
+            if (lastPos.y + (hitboxMin.y + hitboxMax.y) <= collision->hitbox.y)
+            {
+                transform->y = collision->hitbox.y - (hitboxMin.y + hitboxMax.y);
+                std::cout << "3" << std::endl;
+            }
+            else
+            {
+                transform->y = (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
+                std::cout << "4" << std::endl;
+            }
+        }
     }
 }
 
 void OldMan::Update(std::shared_ptr<Resources> resources)
 {
     movingHorizontally = !movingHorizontally;
+    std::cout << movingHorizontally << std::endl;
+
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
 
     // X Collision
-    if (movingHorizontally == true)
+    if (movingHorizontally)
     {
         lastPos.x = transform->x;
         transform->TranslateX(rigidBody->GetPosition().x);
