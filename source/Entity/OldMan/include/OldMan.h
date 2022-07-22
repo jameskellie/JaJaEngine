@@ -16,7 +16,7 @@ class OldMan : public Entity
 
     Vector2D lastPos;
 
-    bool movingHorizontally;
+    bool movingHorizontally = false;
 
 public:
     OldMan(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties);

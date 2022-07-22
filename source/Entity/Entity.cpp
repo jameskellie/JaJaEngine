@@ -1,5 +1,10 @@
 #include "Entity.h"
 
+bool Entity::compareY(std::shared_ptr<Entity> entity1, std::shared_ptr<Entity> entity2)
+{
+    return (entity1->hitbox.y < entity2->hitbox.y);
+}
+
 Entity::Entity(std::shared_ptr<Subject> subject, const TextureProperties &properties)
     : subject   (subject)
     , tileWidth (properties.tileWidth)

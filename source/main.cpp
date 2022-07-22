@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
         level->Render(resources, camera);
 
         // Render
+        std::sort(entities.begin(), entities.end(), Entity::compareY);
         for (auto i : entities)
         {
             i->Render(resources);

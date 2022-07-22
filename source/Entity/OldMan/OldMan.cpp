@@ -1,7 +1,7 @@
 #include "OldMan.h"
 
 #include "Resources.h"
-#include <iostream> // TODO: DELETE
+
 OldMan::OldMan(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)
     : Entity(subject, properties)
 {
@@ -16,40 +16,18 @@ void OldMan::CollisionReaction(std::shared_ptr<Level> level)
 
     if (collision->loadZone == "")
     {
-        if (movingHorizontally)
-        {
-            if (lastPos.x + (hitboxMin.x + hitboxMax.x) <= collision->hitbox.x)
-            {
-                transform->x = collision->hitbox.x - (hitboxMin.x + hitboxMax.x);
-                std::cout << "1" << std::endl;
-            }
-            else
-            {
-                transform->x = (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
-                std::cout << "2" << std::endl;
-                std::cout << lastPos.x + (hitboxMin.x + hitboxMax.x) << " " << collision->hitbox.x << std::endl;
-            }
-        }
-        else
-        {
-            if (lastPos.y + (hitboxMin.y + hitboxMax.y) <= collision->hitbox.y)
-            {
-                transform->y = collision->hitbox.y - (hitboxMin.y + hitboxMax.y);
-                std::cout << "3" << std::endl;
-            }
-            else
-            {
-                transform->y = (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
-                std::cout << "4" << std::endl;
-            }
-        }
+        if (movingHorizontally) transform->x = (lastPos.x + (hitboxMin.x + hitboxMax.x) - 1.0f <= collision->hitbox.x)
+                                             ? collision->hitbox.x - (hitboxMin.x + hitboxMax.x)
+                                             : (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
+        else                    transform->y = (lastPos.y + (hitboxMin.y + hitboxMax.y) - 1.0f <= collision->hitbox.y)
+                                             ? collision->hitbox.y - (hitboxMin.y + hitboxMax.y)
+                                             : (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
     }
 }
 
 void OldMan::Update(std::shared_ptr<Resources> resources)
 {
     movingHorizontally = !movingHorizontally;
-    std::cout << movingHorizontally << std::endl;
 
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
 

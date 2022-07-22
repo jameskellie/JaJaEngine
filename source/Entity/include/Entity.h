@@ -50,6 +50,8 @@ public:
     Entity(const SDL_FRect &hitbox) : hitbox(hitbox) {}
     Entity(std::shared_ptr<Subject> subject, const TextureProperties &properties);
 
+    static bool compareY(std::shared_ptr<Entity> entity1, std::shared_ptr<Entity> entity2);
+
     virtual ~Entity() {}
     virtual void Update(std::shared_ptr<Resources> resources) = 0;
     virtual void Render(std::shared_ptr<Resources> resources) = 0;
