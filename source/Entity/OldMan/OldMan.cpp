@@ -8,6 +8,7 @@ OldMan::OldMan(std::shared_ptr<Subject> subject, const std::unordered_map<std::s
     facing    = Direction::SOUTH;
     animation = std::make_unique<Animation>(properties.id, states);
     rigidBody = std::make_unique<RigidBody>();
+    animation->SetState("idle_south");
 }
 
 void OldMan::CollisionReaction(std::shared_ptr<Level> level)

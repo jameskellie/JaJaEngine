@@ -7,6 +7,7 @@
 
 #include "SDL/SDL_Properties.h"
 
+#include <algorithm>
 #include <iostream>
 
 int main(int argc, char *argv[])

@@ -1,6 +1,8 @@
 #ifndef ENTITYCREATOR_H
 #define ENTITYCREATOR_H
 
+#include "Sequence/Sequence.h"
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -9,7 +11,6 @@
 class Entity;
 class Subject;
 
-struct Sequence;
 struct TextureProperties;
 
 class EntityCreator

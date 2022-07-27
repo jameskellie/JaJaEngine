@@ -1,7 +1,6 @@
 #include "EntityCreator.h"
 #include "EntityRegister.h"
 
-#include "Sequence/Sequence.h"
 #include "TextureProperties/TextureProperties.h"
 
 #include "tinyxml2.h"

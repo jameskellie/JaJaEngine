@@ -1,9 +1,5 @@
 TODO:
 
-entity collision
-
-correct entity depth rendering
-
 make entities load/unload when map changes based on whether they should actually be there
 
 add support for animation frame sprites
