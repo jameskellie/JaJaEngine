@@ -8,23 +8,41 @@ project("JaJaEngine"
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_compile_options(
-    -O3
-    -Wall
-    -Wextra
-    -Werror
-)
-
+option(MSVC "Microsoft Visual C++" OFF)
 option(DEBUG "Debug Mode" ON)
 
-if (DEBUG)
+if (MSVC)
     add_compile_options(
-        -g
+        /O3
+        /W3
     )
+
+    if (DEBUG)
+        add_compile_options(
+            /DEBUG:FASTLINK
+        )
+    else()
+        add_compile_options(
+            /PDBSTRIPPED:stripped
+        )
+    endif()
 else()
     add_compile_options(
-        -s
+        -O3
+        -Wall
+        -Wextra
+        -Werror
     )
+
+    if (DEBUG)
+        add_compile_options(
+            -g
+        )
+    else()
+        add_compile_options(
+            -s
+        )
+    endif()
 endif()
 
 add_subdirectory(libraries)
