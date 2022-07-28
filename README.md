@@ -11,7 +11,7 @@ The engine features a dynamic XML parsing system that allows for all properties,
 2. sdl2_image 2.0.5-2
 3. sdl2_ttf   2.0.18-1
 
-### Build Instructions:
+### Unix Build Instructions:
 (First time)
 1. Create a build directory in root and navigate into it from a terminal
 2. Run "cmake .."
@@ -20,3 +20,9 @@ The engine features a dynamic XML parsing system that allows for all properties,
 1. Navigate to root from a terminal
 2. Run "cmake --build ./build"     to build
 3. Run "./build/source/JaJaEngine" to run
+
+### Windows Build Instructions:
+1. Change the MSVC variable in the root CMakeLists.txt to "ON"
+2. Use the cmake-gui; you will need to manually set the paths to the SDL2 .libs and include directories as they show up as errors (ignore other errors)
+3. Copy the SDL2 library .dll files to the same directory as the built .exe
+4. Copy the assets folder to one level higher than the built .exe

@@ -11,22 +11,7 @@ set(CMAKE_CXX_STANDARD 20)
 option(MSVC "Microsoft Visual C++" OFF)
 option(DEBUG "Debug Mode" ON)
 
-if (MSVC)
-    add_compile_options(
-        /O3
-        /W3
-    )
-
-    if (DEBUG)
-        add_compile_options(
-            /DEBUG:FASTLINK
-        )
-    else()
-        add_compile_options(
-            /PDBSTRIPPED:stripped
-        )
-    endif()
-else()
+if (!MSVC)
     add_compile_options(
         -O3
         -Wall
