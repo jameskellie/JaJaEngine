@@ -1,6 +1,8 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include "Animation.h"
+#include "RigidBody.h"
 #include "Transform.h"
 
 #include "Observer/Subject.h"
@@ -31,7 +33,13 @@ protected:
           tileHeight;
 
     Direction facing;
+    Vector2D  lastPos;
 
+    bool collisionHorizontally = false;
+    bool movingHorizontally    = false;
+
+    std::unique_ptr<Animation> animation;
+    std::unique_ptr<RigidBody> rigidBody;
     std::unique_ptr<Transform> transform;
     std::shared_ptr<Vector2D>  origin;
 
@@ -42,8 +50,8 @@ public:
     virtual void CollisionReaction(std::shared_ptr<Level> level) = 0;
 
     // TODO: Getter/Setter instead of public
-    SDL_FRect hitbox;
-    std::string loadZone;
+    SDL_FRect   hitbox;
+    std::string loadZone; // TODO: Rename to something more general like "data" so it can be used for other children when not a loadZone
     Vector2D    setMapPos;
 
     Entity() {}

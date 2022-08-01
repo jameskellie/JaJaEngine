@@ -6,6 +6,7 @@
 Player::Player(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)
     : Entity(subject, properties)
 {
+    loadZone = "PLAYER";
     facing    = Direction::SOUTH;
     animation = std::make_unique<Animation>(properties.id, states);
     rigidBody = std::make_unique<RigidBody>();
@@ -16,10 +17,10 @@ void Player::CollisionReaction(std::shared_ptr<Level> level)
 {
     if (collision->loadZone == "")
     {
-        if (movingHorizontally) transform->x = (lastPos.x + (hitboxMin.x + hitboxMax.x) <= collision->hitbox.x)
+        if (movingHorizontally) transform->x = (lastPos.x + hitboxMin.x <= collision->hitbox.x)
                                              ? collision->hitbox.x - (hitboxMin.x + hitboxMax.x)
                                              : (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
-        else                    transform->y = (lastPos.y + (hitboxMin.y + hitboxMax.y) <= collision->hitbox.y)
+        else                    transform->y = (lastPos.y + hitboxMin.y <= collision->hitbox.y)
                                              ? collision->hitbox.y - (hitboxMin.y + hitboxMax.y)
                                              : (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
     }
@@ -106,7 +107,7 @@ void Player::Update(std::shared_ptr<Resources> resources)
     else
     {
         lastPos.y = transform->y;
-        transform->TranslateY(rigidBody->GetPosition().y);        
+        transform->TranslateY(rigidBody->GetPosition().y);
     }
 
     SetOrigin(Vector2D(lastPos.x, lastPos.y));

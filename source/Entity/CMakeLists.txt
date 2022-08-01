@@ -9,8 +9,13 @@ add_library(Entity
 )
 
 target_link_libraries(Entity
-    INTERFACE
+    PUBLIC
     Animation
+)
+
+target_link_libraries(Entity
+    INTERFACE
+    Level
     Object
     OldMan
     Player

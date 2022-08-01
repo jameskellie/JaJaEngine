@@ -1,7 +1,7 @@
 #include "OldMan.h"
 
 #include "Resources.h"
-
+#include <iostream> // TODO: DELETE
 OldMan::OldMan(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)
     : Entity(subject, properties)
 {
@@ -15,14 +15,43 @@ void OldMan::CollisionReaction(std::shared_ptr<Level> level)
 {
     (void)level;
 
-    if (collision->loadZone == "")
+    if (collision->loadZone == "PLAYER")
     {
-        if (movingHorizontally) transform->x = (lastPos.x + (hitboxMin.x + hitboxMax.x) - 1.0f <= collision->hitbox.x)
-                                             ? collision->hitbox.x - (hitboxMin.x + hitboxMax.x)
-                                             : (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
-        else                    transform->y = (lastPos.y + (hitboxMin.y + hitboxMax.y) - 1.0f <= collision->hitbox.y)
-                                             ? collision->hitbox.y - (hitboxMin.y + hitboxMax.y)
-                                             : (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
+        if (movingHorizontally)
+        {
+            collisionHorizontally = true;
+
+            if (lastPos.x + hitboxMin.x <= collision->hitbox.x)
+            {
+                rigidBody->ApplyForceX(-32.0f);
+            }
+            else
+            {
+                rigidBody->ApplyForceX(32.0f);
+            }
+        }
+        else
+        {
+            collisionHorizontally = false;
+
+            if (lastPos.y + hitboxMin.y <= collision->hitbox.y)
+            {
+                rigidBody->ApplyForceY(-32.0f);
+            }
+            else
+            {
+                rigidBody->ApplyForceY(32.0f);
+            }
+        }
+    }
+    else
+    {        
+        if (collisionHorizontally) transform->x = (lastPos.x + hitboxMin.x <= collision->hitbox.x)
+                                                ? collision->hitbox.x - (hitboxMin.x + hitboxMax.x)
+                                                : (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
+        else                       transform->y = (lastPos.y + hitboxMin.y <= collision->hitbox.y)
+                                                ? collision->hitbox.y - (hitboxMin.y + hitboxMax.y)
+                                                : (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
     }
 }
 
@@ -31,19 +60,12 @@ void OldMan::Update(std::shared_ptr<Resources> resources)
     movingHorizontally = !movingHorizontally;
 
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
+    rigidBody->RemoveForce();
 
-    // X Collision
-    if (movingHorizontally)
-    {
-        lastPos.x = transform->x;
-        transform->TranslateX(rigidBody->GetPosition().x);
-    }
-    // Y Collision
-    else
-    {
-        lastPos.y = transform->y;
-        transform->TranslateY(rigidBody->GetPosition().y);        
-    }
+    lastPos.x = transform->x;
+    lastPos.y = transform->y;
+
+    transform->Translate(rigidBody->GetPosition());
 
     animation->Update();
     UpdateHitbox();

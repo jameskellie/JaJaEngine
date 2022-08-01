@@ -5,7 +5,6 @@ add_library(OldMan
 
 target_link_libraries(OldMan
     PUBLIC
-    Animation
     Entity
 )
 
