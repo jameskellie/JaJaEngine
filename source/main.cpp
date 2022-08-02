@@ -40,30 +40,42 @@ int main(int argc, char *argv[])
 
     // Freely swap between loaded maps by setting the current map
     level->SetMap("forest"); // TODO: Current map and above map file should be read from save file
+    level->SetMapChanged();
 
     // Loads the following textures into memory
     if (!resources->GetTextureManager()->ParseTextures(resources->GetEngine(), "assets/levels/level01/textures.xml"))
         std::cerr << "Failed to load textures.xml" << std::endl;
 
-    // Storage of all entities currently created - index [0] should always be the player
-    auto entities = EntityCreator::ParseEntities("assets/levels/level01/entities.xml", quadtree);
-    entities[0]->SetPosition(Vector2D(250.0f, 250.0f)); // TODO: Put in/read from savefile
-    entities[1]->SetPosition(Vector2D(232.0f, 232.0f));
+    // Storage of all entities currently created
+    auto player   = EntityCreator::ParseEntity("assets/entities/player/player.xml", quadtree);
+    auto entities = EntityCreator::ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
+    player->SetPosition(Vector2D(250.0f, 250.0f)); // TODO: Put in/read from savefile
+    entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
+    entities.push_back(player);
 
     // Camera & related setup
     auto camera = std::make_shared<Camera>(SDLProperties);
-    camera->SetTarget(entities[0]->GetOrigin());
+    camera->SetTarget(player->GetOrigin());
     resources->GetTextureManager()->SetCamera(camera);
 
     while (resources->GetEngine()->IsRunning())
     {
+        if (level->GetMapChanged())
+        {
+            entities.clear();
+            entities = EntityCreator::ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
+            if (entities.size() == 1) entities[0]->SetPosition(Vector2D(232.0f, 232.0f)); // TODO: Put in/read from file
+            entities.push_back(player);
+            level->SetMapChanged();
+        }
+
         // Quadtree fill
         level->FillQuadtree(quadtree);
         for (auto i : entities)
         {
             quadtree->Insert(i);
         }
-
+        
         // Inputs
         resources->GetInputHandler()->Listen(resources->GetEngine());
 

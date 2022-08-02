@@ -68,7 +68,7 @@ public:
     void Insert(std::shared_ptr<Entity> object);
     void Search(Entity *object, std::list<std::shared_ptr<Entity>> &returnObjects);
     void CheckCollisions(std::shared_ptr<Level> level);
-    void DrawTree (std::shared_ptr<Resources> resources, std::shared_ptr<Camera> camera);
+    void DrawTree(std::shared_ptr<Resources> resources, std::shared_ptr<Camera> camera);
     void SetBounds(std::shared_ptr<Camera> camera);
     void Clear();
     // TODO: Delete

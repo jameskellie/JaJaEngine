@@ -6,7 +6,7 @@
 Player::Player(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)
     : Entity(subject, properties)
 {
-    loadZone = "PLAYER";
+    loadZone  = "PLAYER";
     facing    = Direction::SOUTH;
     animation = std::make_unique<Animation>(properties.id, states);
     rigidBody = std::make_unique<RigidBody>();

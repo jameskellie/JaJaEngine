@@ -27,6 +27,9 @@ std::shared_ptr<Entity> EntityCreator::FactoryMethod(const std::string id, std::
 
 std::shared_ptr<Entity> EntityCreator::ParseEntity(const char *source, std::shared_ptr<Subject> subject)
 {
+    // TODO: Less hack-y solution, see comment below
+    if (source == std::string("assets/entities/player/player.xml")) RegisterEntity("PLAYER");
+
     std::unordered_map<std::string, Sequence> states;
 
     std::string entityType,
@@ -103,9 +106,9 @@ std::shared_ptr<Entity> EntityCreator::ParseEntity(const char *source, std::shar
     return FactoryMethod(entityType, subject, states, TextureProperties(textureID, 0.0f, 0.0f, width, height));
 }
 
-std::vector<std::shared_ptr<Entity>> EntityCreator::ParseEntities(const std::string source, std::shared_ptr<Subject> subject)
+std::vector<std::shared_ptr<Entity>> EntityCreator::ParseEntities(const std::string source, const std::string map, std::shared_ptr<Subject> subject)
 {
-    EntityCreator::Clean();
+    // EntityCreator::Clean();
     
     std::vector<std::shared_ptr<Entity>> returnEntities;
 
@@ -122,6 +125,8 @@ std::vector<std::shared_ptr<Entity>> EntityCreator::ParseEntities(const std::str
 
     for (auto o = e->FirstChildElement("entity"); o != nullptr ; o = o->NextSiblingElement("entity"))
     {
+        if (o->Attribute("map") != map) continue;
+
         RegisterEntity(o->Attribute("type"));
 
         auto entity = ParseEntity(o->Attribute("source"), subject);

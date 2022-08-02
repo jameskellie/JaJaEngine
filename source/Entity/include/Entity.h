@@ -60,7 +60,7 @@ public:
 
     static bool compareY(std::shared_ptr<Entity> entity1, std::shared_ptr<Entity> entity2);
 
-    virtual ~Entity() {}
+    virtual ~Entity();
     virtual void Update(std::shared_ptr<Resources> resources) = 0;
     virtual void Render(std::shared_ptr<Resources> resources) = 0;
     virtual void UpdateHitbox()                               = 0;

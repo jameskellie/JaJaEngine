@@ -15,6 +15,7 @@ class Level
     // All the maps that are part of this level
     std::unordered_map<std::string, std::shared_ptr<Map>> maps;
     std::string                                           currentMap;
+    bool                                                  mapChanged = false;
 
 public:
     bool Load        (std::shared_ptr<Resources> resources, const std::string id, const std::string source);
@@ -27,9 +28,12 @@ public:
 
     // Getters
     inline std::shared_ptr<Map> GetCurrentMap() { return maps[currentMap]; }
+    inline std::string          GetMapName()    { return currentMap; }
+    inline bool                 GetMapChanged() { return mapChanged; }
 
     // Setters
-    inline void SetMap(const std::string map) { currentMap = map; }
+    inline void SetMap(const std::string map) { currentMap = map; mapChanged = true; }
+    inline void SetMapChanged()               { mapChanged = false; }
 };
 
 #endif // LEVEL_H
