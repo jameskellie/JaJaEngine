@@ -9,7 +9,7 @@ Car::Car(std::shared_ptr<Subject> subject, const std::unordered_map<std::string,
     animation = std::make_unique<Animation>(properties.id, states);
     rigidBody = std::make_unique<RigidBody>();
     animation->SetState("drive_west");
-    rigidBody->ApplyForceX(-64.0f);
+    rigidBody->ApplyForceX(-128.0f);
 }
 
 Car::~Car()
@@ -27,12 +27,14 @@ void Car::Update(std::shared_ptr<Resources> resources)
     movingHorizontally = !movingHorizontally;
 
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
-    // rigidBody->RemoveForce();
 
     lastPos.x = transform->x;
     lastPos.y = transform->y;
 
-    transform->Translate(rigidBody->GetPosition());
+    if (movingHorizontally)
+    {
+        transform->Translate(rigidBody->GetPosition());
+    }
 
     if (transform->x < -50.0f)
     {
