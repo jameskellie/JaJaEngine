@@ -1,4 +1,5 @@
 add_subdirectory(Animation)
+add_subdirectory(Car)
 add_subdirectory(Object)
 add_subdirectory(OldMan)
 add_subdirectory(Player)
@@ -15,6 +16,7 @@ target_link_libraries(Entity
 
 target_link_libraries(Entity
     INTERFACE
+    Car
     Level
     Object
     OldMan

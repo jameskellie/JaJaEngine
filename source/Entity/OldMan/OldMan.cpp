@@ -11,6 +11,11 @@ OldMan::OldMan(std::shared_ptr<Subject> subject, const std::unordered_map<std::s
     animation->SetState("idle_south");
 }
 
+OldMan::~OldMan()
+{
+    RemoveObserver();
+}
+
 void OldMan::CollisionReaction(std::shared_ptr<Level> level)
 {
     (void)level;

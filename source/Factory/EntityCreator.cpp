@@ -1,5 +1,4 @@
 #include "EntityCreator.h"
-#include "EntityRegister.h"
 
 #include "TextureProperties/TextureProperties.h"
 
@@ -8,9 +7,20 @@
 #include <iostream>
 #include <vector>
 
-std::unordered_map<std::string, std::function<std::shared_ptr<Entity>(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)>> EntityCreator::entities;
+// Singleton related declarations
+EntityCreator *EntityCreator::instance{nullptr};
+std::mutex EntityCreator::mutex;
 
-void EntityCreator::Register(const std::string id, std::function<std::shared_ptr<Entity>(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)> entity)
+EntityCreator *EntityCreator::GetInstance()
+{
+    std::lock_guard<std::mutex> lock(mutex);
+
+    if (instance == nullptr) instance = new EntityCreator();
+
+    return instance;
+}
+
+void EntityCreator::RegisterEntityToMap(const std::string id, std::function<std::shared_ptr<Entity>(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)> entity)
 {
     entities[id] = entity;
 }
@@ -27,9 +37,6 @@ std::shared_ptr<Entity> EntityCreator::FactoryMethod(const std::string id, std::
 
 std::shared_ptr<Entity> EntityCreator::ParseEntity(const char *source, std::shared_ptr<Subject> subject)
 {
-    // TODO: Less hack-y solution, see comment below
-    if (source == std::string("assets/entities/player/player.xml")) RegisterEntity("PLAYER");
-
     std::unordered_map<std::string, Sequence> states;
 
     std::string entityType,
@@ -108,8 +115,6 @@ std::shared_ptr<Entity> EntityCreator::ParseEntity(const char *source, std::shar
 
 std::vector<std::shared_ptr<Entity>> EntityCreator::ParseEntities(const std::string source, const std::string map, std::shared_ptr<Subject> subject)
 {
-    // EntityCreator::Clean();
-    
     std::vector<std::shared_ptr<Entity>> returnEntities;
 
     tinyxml2::XMLDocument xml;
@@ -126,8 +131,6 @@ std::vector<std::shared_ptr<Entity>> EntityCreator::ParseEntities(const std::str
     for (auto o = e->FirstChildElement("entity"); o != nullptr ; o = o->NextSiblingElement("entity"))
     {
         if (o->Attribute("map") != map) continue;
-
-        RegisterEntity(o->Attribute("type"));
 
         auto entity = ParseEntity(o->Attribute("source"), subject);
 

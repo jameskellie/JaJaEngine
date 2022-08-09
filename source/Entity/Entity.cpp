@@ -18,11 +18,6 @@ Entity::Entity(std::shared_ptr<Subject> subject, const TextureProperties &proper
     SetOrigin(Vector2D(properties.x, properties.y));
 }
 
-Entity::~Entity()
-{
-    RemoveObserver();
-}
-
 void Entity::Update(std::shared_ptr<void> collision, std::shared_ptr<Level> level)
 {
     this->collision = std::static_pointer_cast<Entity>(collision);

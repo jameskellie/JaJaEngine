@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entities>
     <entity type="OLDMAN" map="forest" source="assets/entities/old_man/old_man.xml"/>
+    <entity type="CAR"    map="city"   source="assets/entities/car/car.xml"/>
 </entities>

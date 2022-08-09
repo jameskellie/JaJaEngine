@@ -13,6 +13,11 @@ Player::Player(std::shared_ptr<Subject> subject, const std::unordered_map<std::s
     Idle();
 }
 
+Player::~Player()
+{
+    RemoveObserver();
+}
+
 void Player::CollisionReaction(std::shared_ptr<Level> level)
 {
     if (collision->loadZone == "")

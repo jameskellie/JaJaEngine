@@ -1,9 +1,5 @@
 TODO:
 
-make entities load/unload when map changes based on whether they should actually be there
-
-add support for animation frame sprites // LIKELY WON'T DO
-
 compiling on windows with msvc seems to bug out the entity updates, as if it isn't doing the second update even though the code executes. Moving update code to collisionreaction fixes it but is a hacky solution
 
 dynamic aspect ratios

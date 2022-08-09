@@ -2,4 +2,5 @@
 <textures>
     <texture id="player" source="assets/entities/player/walk.png"/>
     <texture id="old_man" source="assets/entities/old_man/walk.png"/>
+    <texture id="car" source="assets/entities/car/drive.png"/>
 </textures>

@@ -14,6 +14,8 @@ class Player : public Entity
 public:
     Player(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties);
 
+    ~Player();
+
     // Observer-related functions
     void CollisionReaction(std::shared_ptr<Level> level) override;
 

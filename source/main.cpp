@@ -43,13 +43,19 @@ int main(int argc, char *argv[])
     level->SetMapChanged();
 
     // Loads the following textures into memory
+    // TODO: Load entity textures from entity XML, not level XML
     if (!resources->GetTextureManager()->ParseTextures(resources->GetEngine(), "assets/levels/level01/textures.xml"))
         std::cerr << "Failed to load textures.xml" << std::endl;
 
+    // Registers all entities into the factory map - SHOULD ONLY BE CALLED ONCE
+    EntityCreator::GetInstance()->RegisterEntities();
+
     // Storage of all entities currently created
-    auto player   = EntityCreator::ParseEntity("assets/entities/player/player.xml", quadtree);
-    auto entities = EntityCreator::ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
-    player->SetPosition(Vector2D(250.0f, 250.0f)); // TODO: Put in/read from savefile
+    auto player   = EntityCreator::GetInstance()->ParseEntity("assets/entities/player/player.xml", quadtree);
+    auto entities = EntityCreator::GetInstance()->ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
+    
+    // TODO: Put in/read from savefile
+    player->SetPosition(Vector2D(250.0f, 250.0f));
     entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
     entities.push_back(player);
 
@@ -63,8 +69,12 @@ int main(int argc, char *argv[])
         if (level->GetMapChanged())
         {
             entities.clear();
-            entities = EntityCreator::ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
-            if (entities.size() == 1) entities[0]->SetPosition(Vector2D(232.0f, 232.0f)); // TODO: Put in/read from file
+            entities = EntityCreator::GetInstance()->ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
+            
+            // TODO: Put in/read from file
+            if (entities.size() == 1) entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
+            if (level->GetMapName() == "forest") entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
+            else entities[0]->SetPosition(Vector2D(550.0f, 111.0f));
             entities.push_back(player);
             level->SetMapChanged();
         }
