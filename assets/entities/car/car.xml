@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+    <property name="entityType"  entityType="CAR"/>
+    <property name="textureType" textureType="spritesheet"/>
+</properties>
+
+<states>
+    <sequence id="drive_north" row="1" flip="none"/>
+    <sequence id="drive_south" row="0" flip="none"/>
+    <sequence id="drive_east"  row="2" flip="none"/>
+    <sequence id="drive_west"  row="3" flip="none"/>
+</states>
+
+<textures>
+    <texture id="car" source="assets/entities/car/drive.png" width="32" height="32"/>
+</textures>
