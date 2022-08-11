@@ -92,8 +92,7 @@ int main(int argc, char *argv[])
         // Timing
         resources->GetEngine()->UpdateDeltaTime();
 
-        // The duplicate for(update)/quadtree calls may seem strange
-        // but it's to update and check collision of the X/Y planes independently
+        // Check collision of the X/Y planes independently
         // Update X
         for (auto i : entities)
         {

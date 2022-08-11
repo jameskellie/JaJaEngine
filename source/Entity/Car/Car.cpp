@@ -52,6 +52,21 @@ void Car::Render(std::shared_ptr<Resources> resources)
 
 void Car::UpdateHitbox()
 {
+    switch (facing)
+    {
+        case Direction::EAST:
+        case Direction::WEST:
+        hitboxMin = Vector2D({4.0f, 16.0f});
+        hitboxMax = Vector2D({24.0f, 15.0f});
+        break;
+
+        case Direction::NORTH:
+        case Direction::SOUTH:
+        hitboxMin = Vector2D({9.0f, 11.0f});
+        hitboxMax = Vector2D({14.0f, 18.0f});
+        break;
+    }
+    
     hitbox.x = transform->x + hitboxMin.x;
     hitbox.y = transform->y + hitboxMin.y;
     hitbox.w = hitboxMax.x;
