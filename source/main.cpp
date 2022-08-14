@@ -65,52 +65,68 @@ int main(int argc, char *argv[])
     resources->GetTextureManager()->SetCamera(camera);
 
     while (resources->GetEngine()->IsRunning())
-    {
-        if (level->GetMapChanged())
-        {
-            entities.clear();
-            entities = EntityCreator::GetInstance()->ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
-            
-            // TODO: Put in/read from file
-            if (entities.size() == 1) entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
-            if (level->GetMapName() == "forest") entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
-            else entities[0]->SetPosition(Vector2D(550.0f, 111.0f));
-            entities.push_back(player);
-            level->SetMapChanged();
-        }
-
-        // Quadtree fill
-        level->FillQuadtree(quadtree);
-        for (auto i : entities)
-        {
-            quadtree->Insert(i);
-        }
-        
+    {        
         // Inputs
         resources->GetInputHandler()->Listen(resources->GetEngine());
+
+        if (resources->GetInputHandler()->IsKeyDown(SDL_SCANCODE_ESCAPE))
+        {
+            resources->GetEngine()->InvertState();
+        }
 
         // Timing
         resources->GetEngine()->UpdateDeltaTime();
 
-        // Check collision of the X/Y planes independently
-        // Update X
-        for (auto i : entities)
+        if (resources->GetEngine()->GetState() == Engine::State::PLAY)
         {
-            i->Update(resources);
+            if (level->GetMapChanged())
+            {
+                entities.clear();
+                entities = EntityCreator::GetInstance()->ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
+                
+                // TODO: Put in/read from file
+                if (entities.size() == 1) entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
+                if (level->GetMapName() == "forest") entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
+                else entities[0]->SetPosition(Vector2D(550.0f, 111.0f));
+                entities.push_back(player);
+                level->SetMapChanged();
+            }
+
+            // Quadtree fill
+            level->FillQuadtree(quadtree);
+            for (auto i : entities)
+            {
+                quadtree->Insert(i);
+            }
+
+            // Check collision of the X/Y planes independently
+            // Update X
+            for (auto i : entities)
+            {
+                i->Update(resources);
+            }
+
+            quadtree->CheckCollisions(level);
+
+            // Update Y
+            for (auto i : entities)
+            {
+                i->Update(resources);
+            }
+
+            quadtree->CheckCollisions(level);
+
+            // Move camera
+            camera->Update(level->GetCurrentMap()->GetMapDimensions(), level->GetCurrentMap()->GetTileDimensions());
+
+            // Quadtree reset
+            // quadtree->DrawTree(resources, camera); // DEBUG: Uncomment to see the quadtree as an overlay
+            quadtree->Clear();
+            quadtree->SetBounds(camera);
+
+            // Prepare entities for rendering
+            std::sort(entities.begin(), entities.end(), Entity::compareY);
         }
-
-        quadtree->CheckCollisions(level);
-
-        // Update Y
-        for (auto i : entities)
-        {
-            i->Update(resources);
-        }
-
-        quadtree->CheckCollisions(level);
-
-        // Move camera
-        camera->Update(level->GetCurrentMap()->GetMapDimensions(), level->GetCurrentMap()->GetTileDimensions());
 
         // Clear window
         SDL_SetRenderDrawColor(resources->GetEngine()->GetRenderer(), 0, 0, 0, 255);
@@ -120,7 +136,6 @@ int main(int argc, char *argv[])
         level->Render(resources, camera);
 
         // Render
-        std::sort(entities.begin(), entities.end(), Entity::compareY);
         for (auto i : entities)
         {
             i->Render(resources);
@@ -129,10 +144,20 @@ int main(int argc, char *argv[])
         // Render map layers over player
         level->Render(resources, camera, false);
 
-        // Quadtree reset
-        // quadtree->DrawTree(resources, camera); // DEBUG: Uncomment to see the quadtree as an overlay
-        quadtree->Clear();
-        quadtree->SetBounds(camera);
+        // TODO: Proper pause menu
+        if (resources->GetEngine()->GetState() == Engine::State::PAUSE)
+        {
+            SDL_Color color = {255, 255, 255};
+            SDL_Surface *surface = TTF_RenderText_Solid(resources->GetEngine()->GetFont(), "PAUSED", color);
+            SDL_Texture *texture = SDL_CreateTextureFromSurface(resources->GetEngine()->GetRenderer(), surface);
+
+            int textW = 0;
+            int textH = 0;
+            SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
+            SDL_Rect dstRect = {(SDLProperties.TARGET_WIDTH - surface->w) / 2, (SDLProperties.TARGET_HEIGHT - surface->h) / 2, textW, textH};
+
+            SDL_RenderCopy(resources->GetEngine()->GetRenderer(), texture, NULL, &dstRect);
+        }
 
         SDL_RenderPresent(resources->GetEngine()->GetRenderer());
     }
