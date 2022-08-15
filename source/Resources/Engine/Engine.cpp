@@ -76,8 +76,6 @@ void Engine::InvertState()
 {
     if (state == State::PAUSE) state = State::PLAY;
     else                       state = State::PAUSE;
-
-    SDL_Delay(200);
 }
 
 void Engine::Quit()

@@ -25,8 +25,13 @@ void InputHandler::Listen(std::shared_ptr<Engine> engine)
             break;
 
             case SDL_KEYUP:
+            KeyUpdate();
+            break;
+            
             case SDL_KEYDOWN:
             KeyUpdate();
+            if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+                engine->InvertState();
             break;
         }
     }

@@ -69,11 +69,6 @@ int main(int argc, char *argv[])
         // Inputs
         resources->GetInputHandler()->Listen(resources->GetEngine());
 
-        if (resources->GetInputHandler()->IsKeyDown(SDL_SCANCODE_ESCAPE))
-        {
-            resources->GetEngine()->InvertState();
-        }
-
         // Timing
         resources->GetEngine()->UpdateDeltaTime();
 
