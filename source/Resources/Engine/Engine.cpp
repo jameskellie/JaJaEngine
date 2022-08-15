@@ -13,7 +13,7 @@ bool Engine::Initialise(const SDL_Properties &properties)
         return false;
     }
 
-    int flags = IMG_INIT_PNG;
+    int flags    = IMG_INIT_PNG;
     int img_init = IMG_Init(flags);
     if ((img_init & flags) != flags)
     {
@@ -87,6 +87,10 @@ void Engine::Quit()
 
 Engine::~Engine()
 {
+    window   = nullptr;
+    renderer = nullptr;
+    font     = nullptr;
+
     IMG_Quit();
     TTF_Quit();
     SDL_Quit();
