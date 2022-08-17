@@ -6,8 +6,6 @@
 
 #include "SDL_render.h"
 
-#include <iostream>
-
 void Quadtree::Notify(std::shared_ptr<Level> level)
 {
     std::list<Entity *>::iterator iterator = observers.begin();
@@ -192,16 +190,6 @@ void Quadtree::CheckCollisions(std::shared_ptr<Level> level)
 
                 ++returnObjectsIterator;
             }
-
-            // DEBUG: Uncomment to print nearby objects to console
-            // iterator = returnObjects.begin();
-            // std::cout << "nearby: "<<  std::endl;
-            // while (iterator != returnObjects.end())
-            // {
-            //     std::cout << (*iterator)->hitbox.x << " " << (*iterator)->hitbox.y << " " << (*iterator)->hitbox.w << " " << (*iterator)->hitbox.h << std::endl;
-            //     ++iterator;
-            // }
-            // std::cout << std::endl;
         }
 
         returnObjects.clear();

@@ -94,30 +94,17 @@ int main(int argc, char *argv[])
                 quadtree->Insert(i);
             }
 
-            // Check collision of the X/Y planes independently
-            // Update X
+            // Update
             for (auto i : entities)
             {
                 i->Update(resources);
             }
 
-            quadtree->CheckCollisions(level);
-
-            // Update Y
-            for (auto i : entities)
-            {
-                i->Update(resources);
-            }
-
+            // Check collisions
             quadtree->CheckCollisions(level);
 
             // Move camera
             camera->Update(level->GetCurrentMap()->GetMapDimensions(), level->GetCurrentMap()->GetTileDimensions());
-
-            // Quadtree reset
-            // quadtree->DrawTree(resources, camera); // DEBUG: Uncomment to see the quadtree as an overlay
-            quadtree->Clear();
-            quadtree->SetBounds(camera);
 
             // Prepare entities for rendering
             std::sort(entities.begin(), entities.end(), Entity::compareY);
@@ -152,6 +139,14 @@ int main(int argc, char *argv[])
             SDL_Rect dstRect = {(SDLProperties.TARGET_WIDTH - surface->w) / 2, (SDLProperties.TARGET_HEIGHT - surface->h) / 2, textW, textH};
 
             SDL_RenderCopy(resources->GetEngine()->GetRenderer(), texture, NULL, &dstRect);
+        }
+
+        if (resources->GetEngine()->GetState() == Engine::State::PLAY)
+        {
+            // Quadtree reset
+            // quadtree->DrawTree(resources, camera); // DEBUG: Uncomment to see the quadtree as an overlay
+            quadtree->Clear();
+            quadtree->SetBounds(camera);
         }
 
         SDL_RenderPresent(resources->GetEngine()->GetRenderer());

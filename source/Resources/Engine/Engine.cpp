@@ -85,9 +85,9 @@ void Engine::Quit()
 
 Engine::~Engine()
 {
-    window   = nullptr;
-    renderer = nullptr;
-    font     = nullptr;
+    window.reset(nullptr);
+    renderer.reset(nullptr);
+    font.reset(nullptr);
 
     IMG_Quit();
     TTF_Quit();

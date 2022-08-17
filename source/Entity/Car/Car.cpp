@@ -5,6 +5,7 @@
 Car::Car(std::shared_ptr<Subject> subject, const std::unordered_map<std::string, Sequence> &states, const TextureProperties &properties)
     : Entity(subject, properties)
 {
+    loadZone  = "CAR";
     facing    = Direction::WEST;
     animation = std::make_unique<Animation>(properties.id, states);
     rigidBody = std::make_unique<RigidBody>();
@@ -20,21 +21,22 @@ Car::~Car()
 void Car::CollisionReaction(std::shared_ptr<Level> level)
 {
     (void)level;
+
+    if (collision->loadZone == "PLAYER")
+    {
+        // Vector2D collisionForce = collision->rigidBody->GetForce();
+        // collision->rigidBody->ApplyForceX(-130.0f + abs(collisionForce.x));
+    }
 }
 
 void Car::Update(std::shared_ptr<Resources> resources)
 {
-    movingHorizontally = !movingHorizontally;
-
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
 
     lastPos.x = transform->x;
     lastPos.y = transform->y;
 
-    if (movingHorizontally)
-    {
-        transform->Translate(rigidBody->GetPosition());
-    }
+    transform->Translate(rigidBody->GetPosition());
 
     if (transform->x < -50.0f)
     {
