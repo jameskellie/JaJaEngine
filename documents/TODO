@@ -1,5 +1,9 @@
 TODO:
 
+sometimes the player gets stuck on a surface. could it be a corner edge case?
+
+player keeps momentum infinitely if holding down an opposing direction. ie. car pushes left and if you hold right you keep the 130 speed permanently
+
 all additive and reductive forces are hard coded right now. this is true for player, car, and oldman
 
 car collision has a bug where it will pull you through walls
