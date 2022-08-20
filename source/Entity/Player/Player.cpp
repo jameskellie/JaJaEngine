@@ -11,6 +11,9 @@ Player::Player(std::shared_ptr<Subject> subject, const std::unordered_map<std::s
     animation = std::make_unique<Animation>(properties.id, states);
     rigidBody = std::make_unique<RigidBody>();
     Idle();
+
+    horizontalSlide = false;
+    verticalSlide   = false;
 }
 
 Player::~Player()
@@ -19,98 +22,76 @@ Player::~Player()
 }
 
 void Player::CollisionReaction(std::shared_ptr<Level> level)
-{
-    if (collision->loadZone == "")
-    {
-        // Colliding with left edge
-        if (lastPos.x + hitboxMin.x + hitboxMax.x <= collision->hitbox.x && lastPos.y + hitboxMin.y + hitboxMax.y >= collision->hitbox.y && lastPos.y + hitboxMin.y <= collision->hitbox.y + collision->hitbox.h)
-            transform->x = collision->hitbox.x - (hitboxMin.x + hitboxMax.x);
-        // Colliding with right edge
-        if (lastPos.x + hitboxMin.x >= collision->hitbox.x + collision->hitbox.w && lastPos.y + hitboxMin.y + hitboxMax.y >= collision->hitbox.y && lastPos.y + hitboxMin.y <= collision->hitbox.y + collision->hitbox.h)
-            transform->x = (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
-        // Colliding with top edge
-        if (lastPos.y + hitboxMin.y + hitboxMax.y <= collision->hitbox.y && lastPos.x + hitboxMin.x + hitboxMax.x >= collision->hitbox.x && lastPos.x + hitboxMin.x <= collision->hitbox.x + collision->hitbox.w)
-            transform->y = collision->hitbox.y - (hitboxMin.y + hitboxMax.y);
-        // Colliding with bottom edge
-        if (lastPos.y + hitboxMin.y >= collision->hitbox.y + collision->hitbox.h && lastPos.x + hitboxMin.x + hitboxMax.x >= collision->hitbox.x && lastPos.x + hitboxMin.x <= collision->hitbox.x + collision->hitbox.w)
-            transform->y = (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
-    }
-    else if (collision->loadZone == "OLDMAN")
-    {
-        Vector2D force = rigidBody->GetForce();
+{    
+    bool left   = false,
+         right  = false,
+         top    = false,
+         bottom = false;
 
-        // Colliding with left edge
-        if (lastPos.x + hitboxMin.x + hitboxMax.x <= collision->hitbox.x && lastPos.y + hitboxMin.y + hitboxMax.y >= collision->hitbox.y && lastPos.y + hitboxMin.y <= collision->hitbox.y + collision->hitbox.h)
-        {
-            collision->rigidBody->ApplyForceX(force.x);
-            transform->x = collision->hitbox.x - (hitboxMin.x + hitboxMax.x);
-        }
-        // Colliding with right edge
-        if (lastPos.x + hitboxMin.x >= collision->hitbox.x + collision->hitbox.w && lastPos.y + hitboxMin.y + hitboxMax.y >= collision->hitbox.y && lastPos.y + hitboxMin.y <= collision->hitbox.y + collision->hitbox.h)
-        {
-            collision->rigidBody->ApplyForceX(force.x);
-            transform->x = (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
-        }
-        // Colliding with top edge
-        if (lastPos.y + hitboxMin.y + hitboxMax.y <= collision->hitbox.y && lastPos.x + hitboxMin.x + hitboxMax.x >= collision->hitbox.x && lastPos.x + hitboxMin.x <= collision->hitbox.x + collision->hitbox.w)
-        {
-            collision->rigidBody->ApplyForceY(force.y);
-            transform->y = collision->hitbox.y - (hitboxMin.y + hitboxMax.y);
-        }
-        // Colliding with bottom edge
-        if (lastPos.y + hitboxMin.y >= collision->hitbox.y + collision->hitbox.h && lastPos.x + hitboxMin.x + hitboxMax.x >= collision->hitbox.x && lastPos.x + hitboxMin.x <= collision->hitbox.x + collision->hitbox.w)
-        {
-            collision->rigidBody->ApplyForceY(force.y);
-            transform->y = (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
-        }
-    }
-    else if (collision->loadZone == "CAR")
-    {
-        Vector2D force = rigidBody->GetForce();
+    Vector2D force = rigidBody->GetForce();
+    std::shared_ptr<Vector2D> collisionOrigin = collision->GetOrigin();
 
-        // Colliding with left edge
-        if (lastPos.x + hitboxMin.x + hitboxMax.x <= collision->hitbox.x && lastPos.y + hitboxMin.y + hitboxMax.y >= collision->hitbox.y && lastPos.y + hitboxMin.y <= collision->hitbox.y + collision->hitbox.h)
-        {
-            transform->x = collision->hitbox.x - (hitboxMin.x + hitboxMax.x);
-        }
-        // Colliding with right edge
-        else if (lastPos.x + hitboxMin.x >= collision->hitbox.x + collision->hitbox.w && lastPos.y + hitboxMin.y + hitboxMax.y >= collision->hitbox.y && lastPos.y + hitboxMin.y <= collision->hitbox.y + collision->hitbox.h)
-        {
-            transform->x = (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
-        }
-        // Colliding with top edge
-        else if (lastPos.y + hitboxMin.y + hitboxMax.y <= collision->hitbox.y && lastPos.x + hitboxMin.x + hitboxMax.x >= collision->hitbox.x && lastPos.x + hitboxMin.x <= collision->hitbox.x + collision->hitbox.w)
-        {
-            transform->y = collision->hitbox.y - (hitboxMin.y + hitboxMax.y);
-        }
-        // Colliding with bottom edge
-        else if (lastPos.y + hitboxMin.y >= collision->hitbox.y + collision->hitbox.h && lastPos.x + hitboxMin.x + hitboxMax.x >= collision->hitbox.x && lastPos.x + hitboxMin.x <= collision->hitbox.x + collision->hitbox.w)
-        {
-            transform->y = (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
-        }
+    // X-Axis collision
+    if (lastPos.y + hitboxMin.y + hitboxMax.y > collision->lastHitbox.y && lastPos.y + hitboxMin.y < collision->lastHitbox.y + collision->hitbox.h)
+    {
+        if (lastPos.x + hitboxMin.x < collisionOrigin->x)
+            left = true;
         else
+            right = true;
+    }
+    // Y-Axis collision
+    if (lastPos.x + hitboxMin.x + hitboxMax.x > collision->lastHitbox.x && lastPos.x + hitboxMin.x < collision->lastHitbox.x + collision->hitbox.w)
+    {
+        if (lastPos.y + hitboxMin.y < collisionOrigin->y)
+            top = true;
+        else
+            bottom = true;
+    }
+
+    if (left)
+    {
+        if (collision->loadZone != "CAR") transform->x = collision->hitbox.x - (hitboxMin.x + hitboxMax.x);
+        if (collision->loadZone == "OLDMAN") collision->rigidBody->ApplyForceX(force.x);
+    }
+    if (right)
+    {
+        if (collision->loadZone != "CAR") transform->x = (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
+        if (collision->loadZone == "OLDMAN") collision->rigidBody->ApplyForceX(force.x);
+    }
+    if (top)
+    {
+        if (collision->loadZone != "CAR") transform->y = collision->hitbox.y - (hitboxMin.y + hitboxMax.y);
+        if (collision->loadZone == "OLDMAN") collision->rigidBody->ApplyForceY(force.y);
+    }
+    if (bottom)
+    {
+        if (collision->loadZone != "CAR") transform->y = (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
+        if (collision->loadZone == "OLDMAN") collision->rigidBody->ApplyForceY(force.y);
+    }
+
+    if (collision->loadZone == "CAR")
+    {
+        switch(collision->facing)
         {
-            switch(collision->facing)
-            {
-                case Direction::NORTH:
-                rigidBody->ApplyForceY(-130.0f + abs(force.x));
-                break;
+            case Direction::NORTH:
+            case Direction::SOUTH:
+            if      (top)    rigidBody->ApplyForceY(-200.0f);
+            else if (bottom) rigidBody->ApplyForceY(200.0f);
 
-                case Direction::SOUTH:
-                rigidBody->ApplyForceY(130.0f + abs(force.x));
-                break;
+            verticalSlide = true;
+            break;
 
-                case Direction::EAST:
-                rigidBody->ApplyForceX(130.0f + abs(force.x));
-                break;
+            case Direction::EAST:
+            case Direction::WEST:
+            if      (left)  rigidBody->ApplyForceX(-200.0f);
+            else if (right) rigidBody->ApplyForceX(200.0f);
 
-                case Direction::WEST:
-                rigidBody->ApplyForceX(-130.0f + abs(force.x));
-                break;
-            }
+            horizontalSlide = true;
+            break;
         }
     }
-    else
+
+    if (collision->loadZone != "CAR" && collision->loadZone != "OLDMAN" && collision->loadZone != "")
     {
         level->SetMap(collision->loadZone);
         SetPosition(collision->setMapPos);
@@ -146,11 +127,6 @@ void Player::Movement(std::shared_ptr<Resources> resources)
     float verticalForce   = resources->GetInputHandler()->GetMovementDirection(MovementDirection::VERTICAL),
           horizontalForce = resources->GetInputHandler()->GetMovementDirection(MovementDirection::HORIZONTAL);
     
-    Vector2D force = rigidBody->GetForce();
-
-    if (horizontalForce == 0.0f || abs(force.x) > runSpeed) rigidBody->ReduceForceX(2);
-    if (verticalForce   == 0.0f || abs(force.y) > runSpeed) rigidBody->ReduceForceY(2);
-
     // Move Upward
     if (verticalForce < 0.0f)
     {
@@ -176,28 +152,59 @@ void Player::Movement(std::shared_ptr<Resources> resources)
         animation->SetState("walk_east");
     }
 
-    if (abs(force.x) < runSpeed) rigidBody->ApplyForceX(2 * horizontalForce);
-    if (abs(force.y) < runSpeed) rigidBody->ApplyForceY(2 * verticalForce);
+    Vector2D force = rigidBody->GetForce();
+
+    if (horizontalSlide)
+    {
+        rigidBody->ReduceForceX(runSpeed * resources->GetEngine()->GetDeltaTime());
+
+        if (force.x == 0.0f)
+            horizontalSlide = false;
+    }
+    else
+    {
+        if (abs(force.x) <= runSpeed)
+            rigidBody->RemoveForceX();
+
+        rigidBody->ApplyForceX(runSpeed * horizontalForce);
+    }
+
+    if (verticalSlide)
+    {
+        rigidBody->ReduceForceY(runSpeed * resources->GetEngine()->GetDeltaTime());
+
+        if (force.y == 0.0f)
+            verticalSlide = false;
+    }
+    else
+    {
+        if (abs(force.y) <= runSpeed)
+            rigidBody->RemoveForceY();
+    
+        rigidBody->ApplyForceY(runSpeed * verticalForce);
+    }
 }
 
 void Player::Update(std::shared_ptr<Resources> resources)
 {
     Movement(resources);
+
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
 
-    lastPos.x = transform->x;
-    lastPos.y = transform->y;
+    lastPos.x  = transform->x;
+    lastPos.y  = transform->y;
+    lastHitbox = hitbox;
 
     transform->Translate(rigidBody->GetPosition());
 
-    SetOrigin(Vector2D(lastPos.x, lastPos.y));
+    SetOrigin();
     animation->Update();
     UpdateHitbox();
 }
 
 void Player::Render(std::shared_ptr<Resources> resources)
 {
-    animation->Draw(resources, transform->x, transform->y, tileWidth, tileHeight);
+    animation->Draw(resources, lastPos.x, lastPos.y, tileWidth, tileHeight);
 }
 
 void Player::UpdateHitbox()

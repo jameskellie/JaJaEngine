@@ -17,9 +17,6 @@ public:
     inline void TranslateX(const float x)     { this->x += x; }
     inline void TranslateY(const float y)     { this->y += y; }
     inline void Translate (const Vector2D v2) { this->x += v2.x; this->y += v2.y; }
-
-    inline float GetXPosition() { return x; }
-    inline float GetYPosition() { return y; }
 };
 
 #endif // TRANSFORM_H

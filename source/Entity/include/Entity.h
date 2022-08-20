@@ -32,7 +32,7 @@ protected:
     float tileWidth,
           tileHeight;
 
-    Vector2D  lastPos;
+    Vector2D lastPos;
 
     std::unique_ptr<Animation> animation;
     std::unique_ptr<Transform> transform;
@@ -48,10 +48,11 @@ public:
     std::unique_ptr<RigidBody> rigidBody;
     Direction   facing;
     SDL_FRect   hitbox;
+    SDL_FRect   lastHitbox;
     std::string loadZone; // TODO: Rename to something more general like "data" so it can be used for other children when not a loadZone
     Vector2D    setMapPos;
 
-    Entity() {}
+    Entity();
     Entity(const SDL_FRect &hitbox) : hitbox(hitbox) {}
     Entity(std::shared_ptr<Subject> subject, const TextureProperties &properties);
 
@@ -66,8 +67,8 @@ public:
     inline std::shared_ptr<Vector2D> GetOrigin() { return origin; }
 
     // Setters
+    void SetOrigin  (const bool flag = false); // flag variable is for static vs non-static objects
     void SetPosition(const Vector2D &position);
-    void SetOrigin  (const Vector2D &position);
 };
 
 #endif // ENTITY_H

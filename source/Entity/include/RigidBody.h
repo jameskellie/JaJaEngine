@@ -36,26 +36,27 @@ public:
     inline Vector2D GetForce()        { return force; }
 
     // Setters
-    inline void SetMass    (const float mass)     { this->mass    = mass; }
-    inline void SetGravity (const float gravity)  { this->gravity = gravity; }
-    inline void SetAngle   (const float angle)    { this->angle   = angle; }
+    inline void SetMass   (const float mass)    { this->mass    = mass; }
+    inline void SetGravity(const float gravity) { this->gravity = gravity; }
+    inline void SetAngle  (const float angle)   { this->angle   = angle; }
 
-    inline void ApplyForce (const Vector2D force) { this->force   = force; }
-    inline void RemoveForce()                     { force         = Vector2D(0.0f, 0.0f); }
+    inline void RemoveForce () { force         = Vector2D(0.0f, 0.0f); }
+    inline void RemoveForceX() { force.x       = 0.0f; }
+    inline void RemoveForceY() { force.y       = 0.0f; }
     
     // TODO: Move these into a cpp file
-    inline void ReduceForceX(const float forceX)
+    inline void ReduceForceX(const float force)
     {
-        if (force.x < 0.0f) force.x += forceX;
-        if (force.x > 0.0f) force.x -= forceX;
-        if (abs(force.x) < abs(forceX)) force.x = 0.0f;
+        if (this->force.x < 0.0f) this->force.x += force;
+        if (this->force.x > 0.0f) this->force.x -= force;
+        if (abs(this->force.x) < abs(force)) this->force.x = 0.0f;
     }
     
-    inline void ReduceForceY(const float forceY)
+    inline void ReduceForceY(const float force)
     {
-        if (force.y < 0.0f) force.y += forceY;
-        if (force.y > 0.0f) force.y -= forceY;
-        if (abs(force.y) < abs(forceY)) force.y = 0.0f;
+        if (this->force.y < 0.0f) this->force.y += force;
+        if (this->force.y > 0.0f) this->force.y -= force;
+        if (abs(this->force.y) < abs(force)) this->force.y = 0.0f;
     }
 
     inline void ReduceForce(const float force)
@@ -69,19 +70,20 @@ public:
         if (abs(this->force.y) < abs(force)) this->force.y = 0.0f;
     }
 
-    inline void ApplyForceX(const float forceX)
+    // Applying a force is not additive because a slower speed should not make you go faster
+    inline void ApplyForceX(const float force)
     {
-        force.x += forceX;
+        if (abs(force) > abs(this->force.x)) this->force.x = force;
     }
-    inline void ApplyForceY(const float forceY)
+    inline void ApplyForceY(const float force)
     {
-        force.y += forceY;
+        if (abs(force) > abs(this->force.y)) this->force.y = force;
     }
 
     inline void ApplyForce(const float force)
     {
-        this->force.x += force;
-        this->force.y += force;
+        if (abs(force) > abs(this->force.x)) this->force.x = force;
+        if (abs(force) > abs(this->force.y)) this->force.y = force;
     }
 
     inline void ApplyFriction(const Vector2D friction) { this->friction = friction; }

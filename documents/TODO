@@ -1,19 +1,20 @@
 TODO:
 
-sometimes the player gets stuck on a surface. could it be a corner edge case?
+bounce off walls when moving really fast
 
-player keeps momentum infinitely if holding down an opposing direction. ie. car pushes left and if you hold right you keep the 130 speed permanently
+jittering when running into object that is pushed against a wall
+
+clean up collision code
 
 all additive and reductive forces are hard coded right now. this is true for player, car, and oldman
 
 car collision has a bug where it will pull you through walls
 
-Colliding with the old man pushes him faster in vertical and slower on horizontal... Likely related to below:
-compiling on windows with msvc seems to bug out the entity updates, as if it isn't doing the second update even though the code executes. Moving update code to collisionreaction fixes it but is a hacky solution
-
 dynamic aspect ratios
     -current idea is to support a static amount, i.e. 16:9, 16:10, 21:9, and 4:3 by always making maps big enough for all of them
     -if the user's AR doesn't fit any of those, choose the closest one
+
+menus
 
 save files
 

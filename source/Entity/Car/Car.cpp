@@ -21,20 +21,15 @@ Car::~Car()
 void Car::CollisionReaction(std::shared_ptr<Level> level)
 {
     (void)level;
-
-    if (collision->loadZone == "PLAYER")
-    {
-        // Vector2D collisionForce = collision->rigidBody->GetForce();
-        // collision->rigidBody->ApplyForceX(-130.0f + abs(collisionForce.x));
-    }
 }
 
 void Car::Update(std::shared_ptr<Resources> resources)
 {
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
 
-    lastPos.x = transform->x;
-    lastPos.y = transform->y;
+    lastPos.x  = transform->x;
+    lastPos.y  = transform->y;
+    lastHitbox = hitbox;
 
     transform->Translate(rigidBody->GetPosition());
 
@@ -43,13 +38,14 @@ void Car::Update(std::shared_ptr<Resources> resources)
         transform->x = 550.0f;
     }
 
+    SetOrigin();
     animation->Update();
     UpdateHitbox();
 }
 
 void Car::Render(std::shared_ptr<Resources> resources)
 {
-    animation->Draw(resources, transform->x, transform->y, tileWidth, tileHeight);
+    animation->Draw(resources, lastPos.x, lastPos.y, tileWidth, tileHeight);
 }
 
 void Car::UpdateHitbox()

@@ -152,10 +152,10 @@ std::vector<std::shared_ptr<Object>> XMLParser::ParseObjects(tinyxml2::XMLElemen
     {
         auto object = std::make_unique<Object>();
 
-        object->hitbox.x = e->FloatAttribute("x");
-        object->hitbox.y = e->FloatAttribute("y");
-        object->hitbox.w = e->FloatAttribute("width");
-        object->hitbox.h = e->FloatAttribute("height");
+        object->lastHitbox.x = object->hitbox.x = e->FloatAttribute("x");
+        object->lastHitbox.y = object->hitbox.y = e->FloatAttribute("y");
+        object->lastHitbox.w = object->hitbox.w = e->FloatAttribute("width");
+        object->lastHitbox.h = object->hitbox.h = e->FloatAttribute("height");
 
         auto o = e->FirstChildElement("properties");
 
@@ -171,6 +171,7 @@ std::vector<std::shared_ptr<Object>> XMLParser::ParseObjects(tinyxml2::XMLElemen
             }
         }
 
+        object->SetOrigin(true);
         objects.push_back(std::move(object));
     }
 
