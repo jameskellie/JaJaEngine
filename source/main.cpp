@@ -144,6 +144,7 @@ int main(int argc, char *argv[])
         if (resources->GetEngine()->GetState() == Engine::State::PLAY)
         {
             // Quadtree reset
+            // TODO: Enable this debug view through a keybind or options menu
             // quadtree->DrawTree(resources, camera); // DEBUG: Uncomment to see the quadtree as an overlay
             quadtree->Clear();
             quadtree->SetBounds(camera);

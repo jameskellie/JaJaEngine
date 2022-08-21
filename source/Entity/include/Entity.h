@@ -46,6 +46,9 @@ public:
 
     // TODO: Getter/Setter instead of public
     std::unique_ptr<RigidBody> rigidBody;
+    bool        horizontalSlide;
+    bool        verticalSlide;
+    bool        collisionLastFrame;
     Direction   facing;
     SDL_FRect   hitbox;
     SDL_FRect   lastHitbox;

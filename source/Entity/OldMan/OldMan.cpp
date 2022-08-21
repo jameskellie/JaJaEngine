@@ -21,32 +21,78 @@ void OldMan::CollisionReaction(std::shared_ptr<Level> level)
 {
     (void)level;
 
+    collisionLastFrame = true;
+    Vector2D force = rigidBody->GetForce();
+
     if (collision->loadZone == "")
     {
         // Colliding with left edge
         if (lastPos.x + hitboxMin.x + hitboxMax.x <= collision->hitbox.x && lastPos.y + hitboxMin.y + hitboxMax.y > collision->hitbox.y && lastPos.y + hitboxMin.y < collision->hitbox.y + collision->hitbox.h)
+        {
             transform->x = collision->hitbox.x - (hitboxMin.x + hitboxMax.x);
+            if (horizontalSlide) rigidBody->ApplyForceX(-force.x);
+        }
         // Colliding with right edge
         if (lastPos.x + hitboxMin.x >= collision->hitbox.x + collision->hitbox.w && lastPos.y + hitboxMin.y + hitboxMax.y > collision->hitbox.y && lastPos.y + hitboxMin.y < collision->hitbox.y + collision->hitbox.h)
+        {
             transform->x = (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
+            if (horizontalSlide) rigidBody->ApplyForceX(-force.x);
+        }
         // Colliding with top edge
         if (lastPos.y + hitboxMin.y + hitboxMax.y <= collision->hitbox.y && lastPos.x + hitboxMin.x + hitboxMax.x > collision->hitbox.x && lastPos.x + hitboxMin.x < collision->hitbox.x + collision->hitbox.w)
+        {
             transform->y = collision->hitbox.y - (hitboxMin.y + hitboxMax.y);
+            if (verticalSlide) rigidBody->ApplyForceY(-force.y);
+        }
         // Colliding with bottom edge
         if (lastPos.y + hitboxMin.y >= collision->hitbox.y + collision->hitbox.h && lastPos.x + hitboxMin.x + hitboxMax.x > collision->hitbox.x && lastPos.x + hitboxMin.x < collision->hitbox.x + collision->hitbox.w)
+        {
             transform->y = (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
+            if (verticalSlide) rigidBody->ApplyForceY(-force.y);
+        }
     }
 }
 
 void OldMan::Update(std::shared_ptr<Resources> resources)
 {
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
-    rigidBody->ReduceForceX(64.0f * resources->GetEngine()->GetDeltaTime());
-    rigidBody->ReduceForceY(64.0f * resources->GetEngine()->GetDeltaTime());
 
-    lastPos.x  = transform->x;
-    lastPos.y  = transform->y;
-    lastHitbox = hitbox;
+    Vector2D force = rigidBody->GetForce();
+
+    if (horizontalSlide)
+    {
+        rigidBody->ReduceForceX(64.0f * resources->GetEngine()->GetDeltaTime());
+
+        if (force.x == 0.0f)
+            horizontalSlide = false;
+    }
+    else
+    {
+        if (abs(force.x) <= 64.0f)
+            rigidBody->RemoveForceX();
+    }
+
+    if (verticalSlide)
+    {
+        rigidBody->ReduceForceY(64.0f * resources->GetEngine()->GetDeltaTime());
+
+        if (force.y == 0.0f)
+            verticalSlide = false;
+    }
+    else
+    {
+        if (abs(force.y) <= 64.0f)
+            rigidBody->RemoveForceY();
+    }
+
+    if (!collisionLastFrame)
+    {
+        lastPos.x  = transform->x;
+        lastPos.y  = transform->y;
+        lastHitbox = hitbox;
+    }
+
+    collisionLastFrame = false;
 
     transform->Translate(rigidBody->GetPosition());
 

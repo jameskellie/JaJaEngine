@@ -12,8 +12,9 @@ Player::Player(std::shared_ptr<Subject> subject, const std::unordered_map<std::s
     rigidBody = std::make_unique<RigidBody>();
     Idle();
 
-    horizontalSlide = false;
-    verticalSlide   = false;
+    horizontalSlide    = false;
+    verticalSlide      = false;
+    collisionLastFrame = false;
 }
 
 Player::~Player()
@@ -22,19 +23,21 @@ Player::~Player()
 }
 
 void Player::CollisionReaction(std::shared_ptr<Level> level)
-{    
+{
     bool left   = false,
          right  = false,
          top    = false,
          bottom = false;
 
+    collisionLastFrame = true;
     Vector2D force = rigidBody->GetForce();
     std::shared_ptr<Vector2D> collisionOrigin = collision->GetOrigin();
+    std::shared_ptr<Vector2D> origin          = GetOrigin();
 
     // X-Axis collision
     if (lastPos.y + hitboxMin.y + hitboxMax.y > collision->lastHitbox.y && lastPos.y + hitboxMin.y < collision->lastHitbox.y + collision->hitbox.h)
     {
-        if (lastPos.x + hitboxMin.x < collisionOrigin->x)
+        if (origin->x < collisionOrigin->x)
             left = true;
         else
             right = true;
@@ -42,52 +45,120 @@ void Player::CollisionReaction(std::shared_ptr<Level> level)
     // Y-Axis collision
     if (lastPos.x + hitboxMin.x + hitboxMax.x > collision->lastHitbox.x && lastPos.x + hitboxMin.x < collision->lastHitbox.x + collision->hitbox.w)
     {
-        if (lastPos.y + hitboxMin.y < collisionOrigin->y)
+        if (origin->y < collisionOrigin->y)
             top = true;
         else
             bottom = true;
     }
 
+    // Diagonal collisions
+    if (lastPos.y + hitboxMin.y + hitboxMax.y < collision->lastHitbox.y && lastPos.x + hitboxMin.x + hitboxMax.x < collision->lastHitbox.x)
+    {
+        top  = true;
+        left = true;
+    }
+    if (lastPos.y + hitboxMin.y + hitboxMax.y < collision->lastHitbox.y && lastPos.x + hitboxMin.x > collision->lastHitbox.x + collision->hitbox.w)
+    {
+        top   = true;
+        right = true;
+    }
+    if (lastPos.y + hitboxMin.y > collision->lastHitbox.y + collision->hitbox.h && lastPos.x + hitboxMin.x + hitboxMax.x < collision->lastHitbox.x)
+    {
+        bottom = true;
+        left   = true;
+    }
+    if (lastPos.y + hitboxMin.y > collision->lastHitbox.y + collision->hitbox.h && lastPos.x + hitboxMin.x > collision->lastHitbox.x + collision->hitbox.w)
+    {
+        bottom = true;
+        right  = true;
+    }
+
+    // Edge case
+    if (!top && !bottom && !left && !right)
+    {
+        transform->x = lastPos.x;
+        transform->y = lastPos.y;
+    }
+
     if (left)
     {
-        if (collision->loadZone != "CAR") transform->x = collision->hitbox.x - (hitboxMin.x + hitboxMax.x);
-        if (collision->loadZone == "OLDMAN") collision->rigidBody->ApplyForceX(force.x);
+        if (collision->loadZone != "CAR")
+        {
+            transform->x = collision->hitbox.x - (hitboxMin.x + hitboxMax.x);
+            if (horizontalSlide) rigidBody->ApplyForceX(-force.x);
+        }
+        if (collision->loadZone == "OLDMAN")
+        {
+            collision->rigidBody->ApplyForceX(force.x);
+            collision->horizontalSlide = true;
+        }
     }
     if (right)
     {
-        if (collision->loadZone != "CAR") transform->x = (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
-        if (collision->loadZone == "OLDMAN") collision->rigidBody->ApplyForceX(force.x);
+        if (collision->loadZone != "CAR")
+        {
+            transform->x = (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
+            if (horizontalSlide) rigidBody->ApplyForceX(-force.x);
+        }
+        if (collision->loadZone == "OLDMAN")
+        {
+            collision->rigidBody->ApplyForceX(force.x);
+            collision->horizontalSlide = true;
+        }
     }
     if (top)
     {
-        if (collision->loadZone != "CAR") transform->y = collision->hitbox.y - (hitboxMin.y + hitboxMax.y);
-        if (collision->loadZone == "OLDMAN") collision->rigidBody->ApplyForceY(force.y);
+        if (collision->loadZone != "CAR")
+        {
+            transform->y = collision->hitbox.y - (hitboxMin.y + hitboxMax.y);
+            if (verticalSlide) rigidBody->ApplyForceY(-force.y);
+        }
+        if (collision->loadZone == "OLDMAN")
+        {
+            collision->rigidBody->ApplyForceY(force.y);
+            collision->verticalSlide = true;
+        }
     }
     if (bottom)
     {
-        if (collision->loadZone != "CAR") transform->y = (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
-        if (collision->loadZone == "OLDMAN") collision->rigidBody->ApplyForceY(force.y);
+        if (collision->loadZone != "CAR")
+        {
+            transform->y = (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
+            if (verticalSlide) rigidBody->ApplyForceY(-force.y);
+        }
+        if (collision->loadZone == "OLDMAN")
+        {
+            collision->rigidBody->ApplyForceY(force.y);
+            collision->verticalSlide = true;
+        }
     }
 
     if (collision->loadZone == "CAR")
     {
-        switch(collision->facing)
+        if (collision->facing == Direction::NORTH && top)
         {
-            case Direction::NORTH:
-            case Direction::SOUTH:
-            if      (top)    rigidBody->ApplyForceY(-200.0f);
-            else if (bottom) rigidBody->ApplyForceY(200.0f);
-
+            rigidBody->ApplyForceY(-200.0f);
             verticalSlide = true;
-            break;
-
-            case Direction::EAST:
-            case Direction::WEST:
-            if      (left)  rigidBody->ApplyForceX(-200.0f);
-            else if (right) rigidBody->ApplyForceX(200.0f);
-
+        }
+        else if (collision->facing == Direction::SOUTH && bottom)
+        {
+            rigidBody->ApplyForceY(-200.0f);
+            verticalSlide = true;
+        }
+        else if (collision->facing == Direction::EAST && right)
+        {
+            rigidBody->ApplyForceX(-200.0f);
             horizontalSlide = true;
-            break;
+        }
+        else if (collision->facing == Direction::WEST && left)
+        {
+            rigidBody->ApplyForceX(-200.0f);
+            horizontalSlide = true;
+        }
+        else
+        {
+            transform->x = lastPos.x;
+            transform->y = lastPos.y;
         }
     }
 
@@ -191,9 +262,14 @@ void Player::Update(std::shared_ptr<Resources> resources)
 
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
 
-    lastPos.x  = transform->x;
-    lastPos.y  = transform->y;
-    lastHitbox = hitbox;
+    if (!collisionLastFrame)
+    {
+        lastPos.x  = transform->x;
+        lastPos.y  = transform->y;
+        lastHitbox = hitbox;
+    }
+
+    collisionLastFrame = false;
 
     transform->Translate(rigidBody->GetPosition());
 

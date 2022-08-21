@@ -73,17 +73,17 @@ public:
     // Applying a force is not additive because a slower speed should not make you go faster
     inline void ApplyForceX(const float force)
     {
-        if (abs(force) > abs(this->force.x)) this->force.x = force;
+        if (abs(force) >= abs(this->force.x)) this->force.x = force;
     }
     inline void ApplyForceY(const float force)
     {
-        if (abs(force) > abs(this->force.y)) this->force.y = force;
+        if (abs(force) >= abs(this->force.y)) this->force.y = force;
     }
 
     inline void ApplyForce(const float force)
     {
-        if (abs(force) > abs(this->force.x)) this->force.x = force;
-        if (abs(force) > abs(this->force.y)) this->force.y = force;
+        if (abs(force) >= abs(this->force.x)) this->force.x = force;
+        if (abs(force) >= abs(this->force.y)) this->force.y = force;
     }
 
     inline void ApplyFriction(const Vector2D friction) { this->friction = friction; }
