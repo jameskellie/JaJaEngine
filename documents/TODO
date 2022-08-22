@@ -6,8 +6,6 @@ clean up collision code
 
 all additive and reductive forces are hard coded right now. this is true for player, car, and oldman
 
-car collision has a bug where it will pull you through walls
-
 dynamic aspect ratios
     -current idea is to support a static amount, i.e. 16:9, 16:10, 21:9, and 4:3 by always making maps big enough for all of them
     -if the user's AR doesn't fit any of those, choose the closest one
