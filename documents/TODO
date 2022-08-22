@@ -1,8 +1,6 @@
 TODO:
 
-bounce off walls when moving really fast
-
-jittering when running into object that is pushed against a wall
+fix slipping past an object when it's pressed against a wall
 
 clean up collision code
 
