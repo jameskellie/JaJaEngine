@@ -5,6 +5,9 @@
 InputHandler::InputHandler()
 {
     keyStates = SDL_GetKeyboardState(nullptr);
+
+    leftMouseButton  = false;
+    rightMouseButton = false;
 }
 
 void InputHandler::KeyUpdate()
@@ -12,8 +15,17 @@ void InputHandler::KeyUpdate()
     keyStates = SDL_GetKeyboardState(nullptr);
 }
 
+void InputHandler::MousePress(SDL_MouseButtonEvent &mouse)
+{
+    if      (mouse.button == SDL_BUTTON_LEFT)  leftMouseButton  = true;
+    else if (mouse.button == SDL_BUTTON_RIGHT) rightMouseButton = true;
+}
+
 void InputHandler::Listen(std::shared_ptr<Engine> engine)
 {
+    leftMouseButton  = false;
+    rightMouseButton = false;
+
     SDL_Event event;
 
     while (SDL_PollEvent(&event))
@@ -32,6 +44,10 @@ void InputHandler::Listen(std::shared_ptr<Engine> engine)
             KeyUpdate();
             if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
                 engine->InvertState();
+            break;
+
+            case SDL_MOUSEBUTTONDOWN:
+            MousePress(event.button);
             break;
         }
     }

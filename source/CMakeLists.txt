@@ -15,6 +15,7 @@ add_subdirectory(Camera)
 add_subdirectory(Entity)
 add_subdirectory(Factory)
 add_subdirectory(Level)
+add_subdirectory(Menu)
 add_subdirectory(Quadtree)
 add_subdirectory(Resources)
 
@@ -34,6 +35,7 @@ target_link_libraries(${PROJECT_NAME}
     Entity
     Factory
     Level
+    Menu
     Quadtree
     Resources
 )

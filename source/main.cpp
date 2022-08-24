@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "Factory.h"
 #include "Level.h"
+#include "Menu.h"
 #include "Quadtree.h"
 #include "Resources.h"
 
@@ -32,6 +33,10 @@ int main(int argc, char *argv[])
     auto quadtree  = std::make_shared<Quadtree>(Vector2D({0, 0}),
                                                 Vector2D({(float)SDLProperties.TARGET_WIDTH,(float)SDLProperties.TARGET_HEIGHT}));
 
+    // Load menu + fonts
+    auto menu = std::make_unique<Menu>();
+
+    // Game Level
     auto level = std::make_shared<Level>();
 
     // Loads the following maps into memory
@@ -129,23 +134,17 @@ int main(int argc, char *argv[])
         // TODO: Proper pause menu
         if (resources->GetEngine()->GetState() == Engine::State::PAUSE)
         {
-            SDL_Color color = {255, 255, 255};
-            SDL_Surface *surface = TTF_RenderText_Solid(resources->GetEngine()->GetFont(), "PAUSED", color);
-            SDL_Texture *texture = SDL_CreateTextureFromSurface(resources->GetEngine()->GetRenderer(), surface);
+            menu->Pause(resources, SDLProperties);
+        }
 
-            int textW = 0;
-            int textH = 0;
-            SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
-            SDL_Rect dstRect = {(SDLProperties.TARGET_WIDTH - surface->w) / 2, (SDLProperties.TARGET_HEIGHT - surface->h) / 2, textW, textH};
-
-            SDL_RenderCopy(resources->GetEngine()->GetRenderer(), texture, NULL, &dstRect);
+        if (resources->GetEngine()->GetDebugMode())
+        {
+            quadtree->DrawTree(resources, camera);
         }
 
         if (resources->GetEngine()->GetState() == Engine::State::PLAY)
         {
             // Quadtree reset
-            // TODO: Enable this debug view through a keybind or options menu
-            // quadtree->DrawTree(resources, camera); // DEBUG: Uncomment to see the quadtree as an overlay
             quadtree->Clear();
             quadtree->SetBounds(camera);
         }

@@ -1,6 +1,8 @@
 TODO:
 
-fix slipping past an object when it's pressed against a wall
+quadtree debug mode not showing on pause menu
+
+fix slipping past an object when it's pressed against a wall - comment about this in entity.h
 
 clean up collision code
 

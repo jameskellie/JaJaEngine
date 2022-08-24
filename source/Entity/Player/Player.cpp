@@ -14,7 +14,6 @@ Player::Player(std::shared_ptr<Subject> subject, const std::unordered_map<std::s
 
     horizontalSlide    = false;
     verticalSlide      = false;
-    collisionLastFrame = false;
 }
 
 Player::~Player()
@@ -29,7 +28,6 @@ void Player::CollisionReaction(std::shared_ptr<Level> level)
          top    = false,
          bottom = false;
 
-    collisionLastFrame = true;
     Vector2D force = rigidBody->GetForce();
     std::shared_ptr<Vector2D> collisionOrigin = collision->GetOrigin();
     std::shared_ptr<Vector2D> origin          = GetOrigin();
@@ -262,14 +260,9 @@ void Player::Update(std::shared_ptr<Resources> resources)
 
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
 
-    if (!collisionLastFrame)
-    {
-        lastPos.x  = transform->x;
-        lastPos.y  = transform->y;
-        lastHitbox = hitbox;
-    }
-
-    collisionLastFrame = false;
+    lastPos.x  = transform->x;
+    lastPos.y  = transform->y;
+    lastHitbox = hitbox;
 
     transform->Translate(rigidBody->GetPosition());
 

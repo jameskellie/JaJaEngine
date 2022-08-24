@@ -43,15 +43,6 @@ bool Engine::Initialise(const SDL_Properties &properties)
         return false;
     }
 
-    // TODO: This seems like a pretty non-scalable way of doing fonts
-    font.reset(TTF_OpenFont("assets/fonts/pixel.ttf", 50));
-
-    if (font == nullptr)
-    {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create Font: %s", TTF_GetError());
-        return false;
-    }
-
     // Sets the size of the canvas that will then be scaled to match the current screen resolution.
     SDL_RenderSetLogicalSize(renderer.get(), properties.TARGET_WIDTH, properties.TARGET_HEIGHT);
     SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
@@ -61,7 +52,8 @@ bool Engine::Initialise(const SDL_Properties &properties)
     previousTime = 0.0f;
     deltaTime    = 0.0f;
 
-    state = State::PLAY;
+    state          = State::PLAY;
+    debugMode      = false;
     return running = true;
 }
 
@@ -87,7 +79,6 @@ Engine::~Engine()
 {
     window.reset(nullptr);
     renderer.reset(nullptr);
-    font.reset(nullptr);
 
     IMG_Quit();
     TTF_Quit();

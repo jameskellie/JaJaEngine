@@ -48,7 +48,7 @@ public:
     std::unique_ptr<RigidBody> rigidBody;
     bool        horizontalSlide;
     bool        verticalSlide;
-    bool        collisionLastFrame;
+    bool        collisionLastFrame; // With this variable, player warps around the oldman when pushed against a wall. Without it, there's suttering when pushing oldman against a wall
     Direction   facing;
     SDL_FRect   hitbox;
     SDL_FRect   lastHitbox;

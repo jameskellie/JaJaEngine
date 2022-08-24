@@ -18,7 +18,8 @@ public:
 
 private:
     State state;
-    bool running;
+    bool running,
+         debugMode;
 
     // Timing
     float deltaTime,
@@ -27,7 +28,6 @@ private:
 
     std::unique_ptr<SDL_Window  , SDL_Deleter> window;
     std::unique_ptr<SDL_Renderer, SDL_Deleter> renderer;
-    std::unique_ptr<TTF_Font    , SDL_Deleter> font;
 
 public:
     ~Engine();
@@ -40,13 +40,14 @@ public:
     // Getters
     // Must return a raw pointer for SDL Library functions
     inline SDL_Renderer *GetRenderer() { return renderer.get(); }
-    inline TTF_Font     *GetFont()     { return font.get(); }
     inline bool  IsRunning()           { return running; }
+    inline bool  GetDebugMode()        { return debugMode; }
     inline float GetDeltaTime()        { return deltaTime; }
     inline State GetState()            { return state; }
 
     // Setters
     inline void SetState(const State state) { this->state = state; }
+    inline void ToggleDebugMode()           { debugMode = !debugMode; }
 };
 
 #endif // ENGINE_H
