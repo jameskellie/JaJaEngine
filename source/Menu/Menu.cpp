@@ -32,7 +32,6 @@ Menu::~Menu()
 void Menu::Pause(std::shared_ptr<Resources> resources, const SDL_Properties &properties)
 {
     SDL_Color white = {255, 255, 255};
-    // SDL_Color red   = {255, 0  , 0};
 
     // Mouse position
     int x,
@@ -66,7 +65,7 @@ void Menu::Pause(std::shared_ptr<Resources> resources, const SDL_Properties &pro
 
     if ((x < (dstRect.x + dstRect.w) * properties.RESOLUTION_SCALE && x > (dstRect.x) * properties.RESOLUTION_SCALE) && (y < (dstRect.y + dstRect.h) * properties.RESOLUTION_SCALE && y > (dstRect.y) * properties.RESOLUTION_SCALE))
     {
-        SDL_SetTextureColorMod(texture, 255, 0, 0);
+        (resources->GetEngine()->GetDebugMode()) ? SDL_SetTextureColorMod(texture, 0, 0, 255) : SDL_SetTextureColorMod(texture, 255, 0, 0);
 
         if (resources->GetInputHandler()->LeftClick())
         {

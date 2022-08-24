@@ -73,10 +73,19 @@ int main(int argc, char *argv[])
     {        
         // Inputs
         resources->GetInputHandler()->Listen(resources->GetEngine());
-
+        
         // Timing
         resources->GetEngine()->UpdateDeltaTime();
 
+        // Reset
+        if (resources->GetEngine()->GetState() == Engine::State::PLAY)
+        {
+            // Quadtree reset
+            quadtree->Clear();
+            quadtree->SetBounds(camera);
+        }
+
+        // Game loop
         if (resources->GetEngine()->GetState() == Engine::State::PLAY)
         {
             if (level->GetMapChanged())
@@ -131,24 +140,18 @@ int main(int argc, char *argv[])
         // Render map layers over player
         level->Render(resources, camera, false);
 
-        // TODO: Proper pause menu
-        if (resources->GetEngine()->GetState() == Engine::State::PAUSE)
-        {
-            menu->Pause(resources, SDLProperties);
-        }
-
+        // Render debug overlay
         if (resources->GetEngine()->GetDebugMode())
         {
             quadtree->DrawTree(resources, camera);
         }
 
-        if (resources->GetEngine()->GetState() == Engine::State::PLAY)
+        // Menu
+        if (resources->GetEngine()->GetState() == Engine::State::PAUSE)
         {
-            // Quadtree reset
-            quadtree->Clear();
-            quadtree->SetBounds(camera);
+            menu->Pause(resources, SDLProperties);
         }
-
+        
         SDL_RenderPresent(resources->GetEngine()->GetRenderer());
     }
 
