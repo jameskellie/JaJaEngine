@@ -66,8 +66,8 @@ void Engine::UpdateDeltaTime()
 
 void Engine::InvertState()
 {
-    if (state == State::PAUSE) state = State::PLAY;
-    else                       state = State::PAUSE;
+    if (state == State::PAUSE)     state = State::PLAY;
+    else if (state == State::PLAY) state = State::PAUSE;
 }
 
 void Engine::Quit()

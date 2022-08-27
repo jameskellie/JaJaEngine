@@ -16,20 +16,34 @@ void Animation::SetState(const std::string state)
     this->state = state;
 }
 
-void Animation::Draw(std::shared_ptr<Resources> resources, const float x, const float y, const float tileWidth, const float tileHeight)
+void Animation::Draw(std::shared_ptr<Resources> resources, const float x, const float y, const float tileWidth, const float tileHeight, const uint8_t opacity)
 {
-    resources->GetTextureManager()->Draw(resources->GetEngine(), TextureProperties(id,
-                                                                                   x,
-                                                                                   y,
-                                                                                   tileWidth,
-                                                                                   tileHeight,
-                                                                                   states[state].row,
-                                                                                   frame,
-                                                                                   states[state].flip,
-                                                                                   1.0f,
-                                                                                   states[state].opacity,
-                                                                                   states[state].scaleX,
-                                                                                   states[state].scaleY));
+    if (opacity == 255)
+        resources->GetTextureManager()->Draw(resources->GetEngine(), TextureProperties(id,
+                                                                                       x,
+                                                                                       y,
+                                                                                       tileWidth,
+                                                                                       tileHeight,
+                                                                                       states[state].row,
+                                                                                       frame,
+                                                                                       states[state].flip,
+                                                                                       1.0f,
+                                                                                       states[state].opacity,
+                                                                                       states[state].scaleX,
+                                                                                       states[state].scaleY));
+    else
+        resources->GetTextureManager()->Draw(resources->GetEngine(), TextureProperties(id,
+                                                                                       x,
+                                                                                       y,
+                                                                                       tileWidth,
+                                                                                       tileHeight,
+                                                                                       states[state].row,
+                                                                                       frame,
+                                                                                       states[state].flip,
+                                                                                       1.0f,
+                                                                                       opacity,
+                                                                                       states[state].scaleX,
+                                                                                       states[state].scaleY));
 }
 
 void Animation::Update()

@@ -25,12 +25,15 @@ protected:
         WEST
     };
 
+    int health;
+
     // Observer-related members
     std::shared_ptr<Entity>  collision;
     std::shared_ptr<Subject> subject;
 
     float tileWidth,
-          tileHeight;
+          tileHeight,
+          invincibilityFrames;
 
     Vector2D lastPos;
 
@@ -68,10 +71,15 @@ public:
 
     // Getters
     inline std::shared_ptr<Vector2D> GetOrigin() { return origin; }
+    inline int   GetHealth()                     { return health; }
+    inline float GetInvincibilityFrames()        { return invincibilityFrames; }
 
     // Setters
-    void SetOrigin  (const bool flag = false); // flag variable is for static vs non-static objects
-    void SetPosition(const Vector2D &position);
+    void SetOrigin                (const bool flag = false); // flag variable is for static vs non-static objects
+    void SetPosition              (const Vector2D &position);
+    void SetHealth                (const int health);
+    void ReduceHealth             (const int health);
+    void ReduceInvincibilityFrames(const float deltaTime);
 };
 
 #endif // ENTITY_H

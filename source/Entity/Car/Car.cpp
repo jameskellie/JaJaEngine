@@ -25,6 +25,8 @@ void Car::CollisionReaction(std::shared_ptr<Level> level)
 
 void Car::Update(std::shared_ptr<Resources> resources)
 {
+    ReduceInvincibilityFrames(resources->GetEngine()->GetDeltaTime());
+
     rigidBody->Update(resources->GetEngine()->GetDeltaTime());
 
     lastPos.x  = transform->x;

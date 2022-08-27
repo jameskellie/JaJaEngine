@@ -26,7 +26,7 @@ public:
 
     void SetState(const std::string state);
     // Pass through which row the image uses and how many frames the target image has and this function handles iterating through it at the animation speed
-    void Draw(std::shared_ptr<Resources> resources, const float x, const float y, const float tileWidth, const float tileHeight);
+    void Draw(std::shared_ptr<Resources> resources, const float x, const float y, const float tileWidth, const float tileHeight, const uint8_t opacity = 255);
     void Update();
 };
 

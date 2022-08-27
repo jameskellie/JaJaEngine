@@ -14,6 +14,7 @@ Player::Player(std::shared_ptr<Subject> subject, const std::unordered_map<std::s
 
     horizontalSlide    = false;
     verticalSlide      = false;
+    health             = 100;
 }
 
 Player::~Player()
@@ -82,6 +83,7 @@ void Player::CollisionReaction(std::shared_ptr<Level> level)
     {
         if (collision->loadZone != "CAR")
         {
+            if (force.x > runSpeed) ReduceHealth(force.x - runSpeed);
             transform->x = collision->hitbox.x - (hitboxMin.x + hitboxMax.x);
             if (horizontalSlide) rigidBody->ApplyForceX(-force.x);
         }
@@ -95,6 +97,7 @@ void Player::CollisionReaction(std::shared_ptr<Level> level)
     {
         if (collision->loadZone != "CAR")
         {
+            if (force.x > runSpeed) ReduceHealth(force.x - runSpeed);
             transform->x = (collision->hitbox.x + collision->hitbox.w) - hitboxMin.x;
             if (horizontalSlide) rigidBody->ApplyForceX(-force.x);
         }
@@ -108,6 +111,7 @@ void Player::CollisionReaction(std::shared_ptr<Level> level)
     {
         if (collision->loadZone != "CAR")
         {
+            if (force.y > runSpeed) ReduceHealth(force.y - runSpeed);
             transform->y = collision->hitbox.y - (hitboxMin.y + hitboxMax.y);
             if (verticalSlide) rigidBody->ApplyForceY(-force.y);
         }
@@ -121,6 +125,7 @@ void Player::CollisionReaction(std::shared_ptr<Level> level)
     {
         if (collision->loadZone != "CAR")
         {
+            if (force.y > runSpeed) ReduceHealth(force.y - runSpeed);
             transform->y = (collision->hitbox.y + collision->hitbox.h) - hitboxMin.y;
             if (verticalSlide) rigidBody->ApplyForceY(-force.y);
         }
@@ -133,6 +138,8 @@ void Player::CollisionReaction(std::shared_ptr<Level> level)
 
     if (collision->loadZone == "CAR")
     {
+        ReduceHealth(50);
+
         if (collision->facing == Direction::NORTH && top)
         {
             rigidBody->ApplyForceY(-200.0f);
@@ -256,24 +263,34 @@ void Player::Movement(std::shared_ptr<Resources> resources)
 
 void Player::Update(std::shared_ptr<Resources> resources)
 {
-    Movement(resources);
+    if (resources->GetEngine()->GetState() != Engine::State::GAMEOVER)
+    {
+        ReduceInvincibilityFrames(resources->GetEngine()->GetDeltaTime());
 
-    rigidBody->Update(resources->GetEngine()->GetDeltaTime());
+        if (health <= 0) resources->GetEngine()->GameOver();
 
-    lastPos.x  = transform->x;
-    lastPos.y  = transform->y;
-    lastHitbox = hitbox;
+        Movement(resources);
 
-    transform->Translate(rigidBody->GetPosition());
+        rigidBody->Update(resources->GetEngine()->GetDeltaTime());
 
-    SetOrigin();
-    animation->Update();
-    UpdateHitbox();
+        lastPos.x  = transform->x;
+        lastPos.y  = transform->y;
+        lastHitbox = hitbox;
+
+        transform->Translate(rigidBody->GetPosition());
+
+        SetOrigin();
+        animation->Update();
+        UpdateHitbox();
+    }
 }
 
 void Player::Render(std::shared_ptr<Resources> resources)
 {
-    animation->Draw(resources, lastPos.x, lastPos.y, tileWidth, tileHeight);
+    if (GetInvincibilityFrames() == 0.0f)
+        animation->Draw(resources, lastPos.x, lastPos.y, tileWidth, tileHeight);
+    else
+        animation->Draw(resources, lastPos.x, lastPos.y, tileWidth, tileHeight, 255 - (GetInvincibilityFrames() * 255));
 }
 
 void Player::UpdateHitbox()

@@ -13,7 +13,8 @@ public:
     enum class State
     {
         PLAY,
-        PAUSE
+        PAUSE,
+        GAMEOVER
     };
 
 private:
@@ -47,7 +48,8 @@ public:
 
     // Setters
     inline void SetState(const State state) { this->state = state; }
-    inline void ToggleDebugMode()           { debugMode = !debugMode; }
+    inline void ToggleDebugMode()           { debugMode   = !debugMode; }
+    inline void GameOver()                  { state       = State::GAMEOVER; }
 };
 
 #endif // ENGINE_H

@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     resources->GetTextureManager()->SetCamera(camera);
 
     while (resources->GetEngine()->IsRunning())
-    {        
+    {
         // Inputs
         resources->GetInputHandler()->Listen(resources->GetEngine());
         
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
         }
 
         // Game loop
-        if (resources->GetEngine()->GetState() == Engine::State::PLAY)
+        if (resources->GetEngine()->GetState() == Engine::State::PLAY || resources->GetEngine()->GetState() == Engine::State::GAMEOVER)
         {
             if (level->GetMapChanged())
             {
@@ -150,6 +150,10 @@ int main(int argc, char *argv[])
         if (resources->GetEngine()->GetState() == Engine::State::PAUSE)
         {
             menu->Pause(resources, SDLProperties);
+        }
+        else if (resources->GetEngine()->GetState() == Engine::State::GAMEOVER)
+        {
+            menu->GameOver(resources, SDLProperties);
         }
         
         SDL_RenderPresent(resources->GetEngine()->GetRenderer());

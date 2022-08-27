@@ -8,6 +8,7 @@ bool Entity::compareY(std::shared_ptr<Entity> entity1, std::shared_ptr<Entity> e
 Entity::Entity()
 {
     origin = std::make_shared<Vector2D>();
+    invincibilityFrames = 0.0f;
 }
 
 Entity::Entity(std::shared_ptr<Subject> subject, const TextureProperties &properties)
@@ -46,4 +47,28 @@ void Entity::SetOrigin(const bool flag)
         origin->x = lastPos.x + tileWidth  / 2.0f;
         origin->y = lastPos.y + tileHeight / 2.0f;
     }
+}
+
+void Entity::SetHealth(const int health)
+{
+    this->health = health;
+}
+
+void Entity::ReduceHealth(const int health)
+{
+    if (invincibilityFrames == 0.0f)
+    {
+        this->health -= health;
+        invincibilityFrames = 1;
+    }
+}
+
+void Entity::ReduceInvincibilityFrames(const float deltaTime)
+{
+    // TODO: Magic numbers
+    if (invincibilityFrames != 0.0f)
+        invincibilityFrames -= 1.0f * deltaTime;
+    
+    if (invincibilityFrames < 0.0f)
+        invincibilityFrames = 0.0f;
 }
