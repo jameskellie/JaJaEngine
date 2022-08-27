@@ -128,20 +128,23 @@ int main(int argc, char *argv[])
             // In-game menu
             if (resources->GetEngine()->GetState() == Engine::State::PAUSE)
             {
-                menu->Pause(resources, SDLProperties);
+                menu->Pause(resources);
             }
             else if (resources->GetEngine()->GetState() == Engine::State::GAMEOVER)
             {
-                menu->GameOver(resources, SDLProperties);
+                menu->GameOver(resources);
             }
         }
         else
         {
             // Main menu
-            menu->MainMenu(resources, SDLProperties);
+            menu->MainMenu(resources);
 
             if (resources->GetEngine()->GetState() == Engine::State::PLAY)
             {
+                resources->GetTextureManager()->Clean();
+                level->Clean();
+
                 // Loads the following maps into memory
                 if (!level->ParseMaps(resources, "assets/levels/level01/maps.xml"))
                     std::cerr << "Failed to load maps.xml" << std::endl;

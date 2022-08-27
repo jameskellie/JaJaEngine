@@ -29,7 +29,7 @@ Menu::~Menu()
     buttonText.reset(nullptr);
 }
 
-void Menu::Pause(std::shared_ptr<Resources> resources, const SDL_Properties &properties)
+void Menu::Pause(std::shared_ptr<Resources> resources)
 {
     SDL_Color white = {255, 255, 255};
 
@@ -52,7 +52,7 @@ void Menu::Pause(std::shared_ptr<Resources> resources, const SDL_Properties &pro
     textW   = 0;
     textH   = 0;
     SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
-    dstRect = {(properties.TARGET_WIDTH - surface->w) / 2, (properties.TARGET_HEIGHT - surface->h) / 3, textW, textH};
+    dstRect = {(resources->GetEngine()->GetProperties()->TARGET_WIDTH - surface->w) / 2, (resources->GetEngine()->GetProperties()->TARGET_HEIGHT - surface->h) / 3, textW, textH};
     SDL_RenderCopy(resources->GetEngine()->GetRenderer(), texture, NULL, &dstRect);
 
     // "DEBUG MODE" Button
@@ -61,9 +61,9 @@ void Menu::Pause(std::shared_ptr<Resources> resources, const SDL_Properties &pro
     textW   = 0;
     textH   = 0;
     SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
-    dstRect = {static_cast<int>((properties.TARGET_WIDTH - surface->w) * 0.25), static_cast<int>((properties.TARGET_HEIGHT - surface->h) * 0.6), textW, textH};
+    dstRect = {static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_WIDTH - surface->w) * 0.25), static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_HEIGHT - surface->h) * 0.6), textW, textH};
 
-    if ((x < (dstRect.x + dstRect.w) * properties.RESOLUTION_SCALE && x > (dstRect.x) * properties.RESOLUTION_SCALE) && (y < (dstRect.y + dstRect.h) * properties.RESOLUTION_SCALE && y > (dstRect.y) * properties.RESOLUTION_SCALE))
+    if ((x < (dstRect.x + dstRect.w) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH && x > (dstRect.x) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH) && (y < (dstRect.y + dstRect.h) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT && y > (dstRect.y) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT))
     {
         (resources->GetEngine()->GetDebugMode()) ? SDL_SetTextureColorMod(texture, 0, 0, 255) : SDL_SetTextureColorMod(texture, 255, 0, 0);
 
@@ -81,9 +81,9 @@ void Menu::Pause(std::shared_ptr<Resources> resources, const SDL_Properties &pro
     textW   = 0;
     textH   = 0;
     SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
-    dstRect = {static_cast<int>((properties.TARGET_WIDTH - surface->w) * 0.75), static_cast<int>((properties.TARGET_HEIGHT - surface->h) * 0.6), textW, textH};
+    dstRect = {static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_WIDTH - surface->w) * 0.75), static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_HEIGHT - surface->h) * 0.6), textW, textH};
 
-    if ((x < (dstRect.x + dstRect.w) * properties.RESOLUTION_SCALE && x > (dstRect.x) * properties.RESOLUTION_SCALE) && (y < (dstRect.y + dstRect.h) * properties.RESOLUTION_SCALE && y > (dstRect.y) * properties.RESOLUTION_SCALE))
+    if ((x < (dstRect.x + dstRect.w) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH && x > (dstRect.x) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH) && (y < (dstRect.y + dstRect.h) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT && y > (dstRect.y) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT))
     {
         SDL_SetTextureColorMod(texture, 255, 0, 0);
 
@@ -96,7 +96,7 @@ void Menu::Pause(std::shared_ptr<Resources> resources, const SDL_Properties &pro
     SDL_RenderCopy(resources->GetEngine()->GetRenderer(), texture, NULL, &dstRect);
 }
 
-void Menu::GameOver(std::shared_ptr<Resources> resources, const SDL_Properties &properties)
+void Menu::GameOver(std::shared_ptr<Resources> resources)
 {
     SDL_Color white = {255, 255, 255};
     SDL_Color red   = {255, 0  , 0};
@@ -120,7 +120,7 @@ void Menu::GameOver(std::shared_ptr<Resources> resources, const SDL_Properties &
     textW   = 0;
     textH   = 0;
     SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
-    dstRect = {(properties.TARGET_WIDTH - surface->w) / 2, (properties.TARGET_HEIGHT - surface->h) / 3, textW, textH};
+    dstRect = {(resources->GetEngine()->GetProperties()->TARGET_WIDTH - surface->w) / 2, (resources->GetEngine()->GetProperties()->TARGET_HEIGHT - surface->h) / 3, textW, textH};
     SDL_RenderCopy(resources->GetEngine()->GetRenderer(), texture, NULL, &dstRect);
 
     // "Quit" Button
@@ -129,9 +129,9 @@ void Menu::GameOver(std::shared_ptr<Resources> resources, const SDL_Properties &
     textW   = 0;
     textH   = 0;
     SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
-    dstRect = {static_cast<int>((properties.TARGET_WIDTH - surface->w) * 0.5), static_cast<int>((properties.TARGET_HEIGHT - surface->h) * 0.6), textW, textH};
+    dstRect = {static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_WIDTH - surface->w) * 0.5), static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_HEIGHT - surface->h) * 0.6), textW, textH};
 
-    if ((x < (dstRect.x + dstRect.w) * properties.RESOLUTION_SCALE && x > (dstRect.x) * properties.RESOLUTION_SCALE) && (y < (dstRect.y + dstRect.h) * properties.RESOLUTION_SCALE && y > (dstRect.y) * properties.RESOLUTION_SCALE))
+    if ((x < (dstRect.x + dstRect.w) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH && x > (dstRect.x) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH) && (y < (dstRect.y + dstRect.h) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT && y > (dstRect.y) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT))
     {
         SDL_SetTextureColorMod(texture, 255, 0, 0);
 
@@ -144,7 +144,7 @@ void Menu::GameOver(std::shared_ptr<Resources> resources, const SDL_Properties &
     SDL_RenderCopy(resources->GetEngine()->GetRenderer(), texture, NULL, &dstRect);
 }
 
-void Menu::MainMenu(std::shared_ptr<Resources> resources, const SDL_Properties &properties)
+void Menu::MainMenu(std::shared_ptr<Resources> resources)
 {
     SDL_Color white = {255, 255, 255};
 
@@ -167,7 +167,7 @@ void Menu::MainMenu(std::shared_ptr<Resources> resources, const SDL_Properties &
     textW   = 0;
     textH   = 0;
     SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
-    dstRect = {(properties.TARGET_WIDTH - surface->w) / 2, (properties.TARGET_HEIGHT - surface->h) / 3, textW, textH};
+    dstRect = {(resources->GetEngine()->GetProperties()->TARGET_WIDTH - surface->w) / 2, (resources->GetEngine()->GetProperties()->TARGET_HEIGHT - surface->h) / 3, textW, textH};
     SDL_RenderCopy(resources->GetEngine()->GetRenderer(), texture, NULL, &dstRect);
 
     // "New" Button
@@ -176,11 +176,11 @@ void Menu::MainMenu(std::shared_ptr<Resources> resources, const SDL_Properties &
     textW   = 0;
     textH   = 0;
     SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
-    dstRect = {static_cast<int>((properties.TARGET_WIDTH - surface->w) * 0.5), static_cast<int>((properties.TARGET_HEIGHT - surface->h) * 0.6), textW, textH};
+    dstRect = {static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_WIDTH - surface->w) * 0.5), static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_HEIGHT - surface->h) * 0.6), textW, textH};
 
-    if ((x < (dstRect.x + dstRect.w) * properties.RESOLUTION_SCALE && x > (dstRect.x) * properties.RESOLUTION_SCALE) && (y < (dstRect.y + dstRect.h) * properties.RESOLUTION_SCALE && y > (dstRect.y) * properties.RESOLUTION_SCALE))
+    if ((x < (dstRect.x + dstRect.w) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH && x > (dstRect.x) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH) && (y < (dstRect.y + dstRect.h) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT && y > (dstRect.y) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT))
     {
-        (resources->GetEngine()->GetDebugMode()) ? SDL_SetTextureColorMod(texture, 0, 0, 255) : SDL_SetTextureColorMod(texture, 255, 0, 0);
+        SDL_SetTextureColorMod(texture, 255, 0, 0);
 
         if (resources->GetInputHandler()->LeftClick())
         {
@@ -196,9 +196,9 @@ void Menu::MainMenu(std::shared_ptr<Resources> resources, const SDL_Properties &
     textW   = 0;
     textH   = 0;
     SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
-    dstRect = {static_cast<int>((properties.TARGET_WIDTH - surface->w) * 0.5), static_cast<int>((properties.TARGET_HEIGHT - surface->h) * 0.7), textW, textH};
+    dstRect = {static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_WIDTH - surface->w) * 0.5), static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_HEIGHT - surface->h) * 0.7), textW, textH};
 
-    if ((x < (dstRect.x + dstRect.w) * properties.RESOLUTION_SCALE && x > (dstRect.x) * properties.RESOLUTION_SCALE) && (y < (dstRect.y + dstRect.h) * properties.RESOLUTION_SCALE && y > (dstRect.y) * properties.RESOLUTION_SCALE))
+    if ((x < (dstRect.x + dstRect.w) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH && x > (dstRect.x) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH) && (y < (dstRect.y + dstRect.h) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT && y > (dstRect.y) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT))
     {
         SDL_SetTextureColorMod(texture, 255, 0, 0);
 
@@ -216,9 +216,9 @@ void Menu::MainMenu(std::shared_ptr<Resources> resources, const SDL_Properties &
     textW   = 0;
     textH   = 0;
     SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
-    dstRect = {static_cast<int>((properties.TARGET_WIDTH - surface->w) * 0.5), static_cast<int>((properties.TARGET_HEIGHT - surface->h) * 0.8), textW, textH};
+    dstRect = {static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_WIDTH - surface->w) * 0.5), static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_HEIGHT - surface->h) * 0.8), textW, textH};
 
-    if ((x < (dstRect.x + dstRect.w) * properties.RESOLUTION_SCALE && x > (dstRect.x) * properties.RESOLUTION_SCALE) && (y < (dstRect.y + dstRect.h) * properties.RESOLUTION_SCALE && y > (dstRect.y) * properties.RESOLUTION_SCALE))
+    if ((x < (dstRect.x + dstRect.w) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH && x > (dstRect.x) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_WIDTH) && (y < (dstRect.y + dstRect.h) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT && y > (dstRect.y) * resources->GetEngine()->GetProperties()->RESOLUTION_SCALE_HEIGHT))
     {
         SDL_SetTextureColorMod(texture, 255, 0, 0);
 

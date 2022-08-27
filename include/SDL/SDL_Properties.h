@@ -6,11 +6,12 @@
 struct SDL_Properties
 {
     const char    *WINDOW_TITLE;
-    const int      WINDOW_WIDTH;   // TODO: set to user's screen values
-    const int      WINDOW_HEIGHT;
+          int      WINDOW_WIDTH;   // TODO: set to user's screen values
+          int      WINDOW_HEIGHT;
     const int      TARGET_WIDTH;   // TODO: set to user's aspect ratio
     const int      TARGET_HEIGHT;
-    const int      RESOLUTION_SCALE;
+          float    RESOLUTION_SCALE_WIDTH;
+          float    RESOLUTION_SCALE_HEIGHT;
     const int      RD_INDEX;
     const uint32_t WINDOW_FLAGS;
     const uint32_t RENDERER_FLAGS; // TODO: vsync toggle
@@ -28,7 +29,6 @@ struct SDL_Properties
         , WINDOW_HEIGHT   (WINDOW_HEIGHT)
         , TARGET_WIDTH    (TARGET_WIDTH)
         , TARGET_HEIGHT   (TARGET_HEIGHT)
-        , RESOLUTION_SCALE(WINDOW_HEIGHT / TARGET_HEIGHT) // Might not work with various aspect ratios
         , RD_INDEX        (RD_INDEX)
         , WINDOW_FLAGS    (WINDOW_FLAGS)
         , RENDERER_FLAGS  (RENDERER_FLAGS) {}

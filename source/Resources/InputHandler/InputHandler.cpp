@@ -49,6 +49,19 @@ void InputHandler::Listen(std::shared_ptr<Engine> engine)
             case SDL_MOUSEBUTTONDOWN:
             MousePress(event.button);
             break;
+
+            case SDL_WINDOWEVENT:
+            switch (event.window.event)
+            {
+                case SDL_WINDOWEVENT_SIZE_CHANGED:
+                engine->SetScale();
+                break;
+
+                case SDL_WINDOWEVENT_FOCUS_LOST:
+                engine->SetState(Engine::State::PAUSE);
+                break;
+            }
+            break;
         }
     }
 }

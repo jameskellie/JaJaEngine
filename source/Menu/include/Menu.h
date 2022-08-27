@@ -18,9 +18,9 @@ public:
     Menu();
     ~Menu();
 
-    void Pause   (std::shared_ptr<Resources> resources, const SDL_Properties &properties);
-    void GameOver(std::shared_ptr<Resources> resources, const SDL_Properties &properties);
-    void MainMenu(std::shared_ptr<Resources> resources, const SDL_Properties &properties);
+    void Pause   (std::shared_ptr<Resources> resources);
+    void GameOver(std::shared_ptr<Resources> resources);
+    void MainMenu(std::shared_ptr<Resources> resources);
 
     // Getters
     // Must return a raw pointer for SDL Library functions

@@ -7,6 +7,8 @@
 
 bool Engine::Initialise(const SDL_Properties &properties)
 {
+    this->properties = std::make_shared<SDL_Properties>(properties);
+
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
     {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to initialize SDL: %s", SDL_GetError());
@@ -35,6 +37,7 @@ bool Engine::Initialise(const SDL_Properties &properties)
         return false;
     }
 
+    SetScale();
     renderer.reset(SDL_CreateRenderer(window.get(), properties.RD_INDEX, properties.RENDERER_FLAGS));
 
     if (renderer == nullptr)
@@ -68,6 +71,32 @@ void Engine::InvertState()
 {
     if (state == State::PAUSE)     state = State::PLAY;
     else if (state == State::PLAY) state = State::PAUSE;
+}
+
+void Engine::SetState(const State state)
+{
+    if (this->state == State::MAINMENU && state == State::PAUSE) return;
+
+    this->state = state;
+}
+
+// TODO: Multiple aspect ratio support
+void Engine::SetScale()
+{
+    SDL_GetWindowSize(window.get(), &properties->WINDOW_WIDTH, &properties->WINDOW_HEIGHT);
+
+    // Width
+    float floatWindowWidth = properties->WINDOW_WIDTH,
+          floatTargetWidth = properties->TARGET_WIDTH;
+
+    properties->RESOLUTION_SCALE_WIDTH = floatWindowWidth / floatTargetWidth;
+
+    // Height
+    float floatWindowHeight = properties->WINDOW_HEIGHT,
+          floatTargetHeight = properties->TARGET_HEIGHT;
+
+    properties->RESOLUTION_SCALE_HEIGHT = floatWindowHeight / floatTargetHeight;
+
 }
 
 void Engine::Quit()
