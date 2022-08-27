@@ -32,131 +32,146 @@ int main(int argc, char *argv[])
     auto resources = std::make_shared<Resources>(SDLProperties);
     auto quadtree  = std::make_shared<Quadtree>(Vector2D({0, 0}),
                                                 Vector2D({(float)SDLProperties.TARGET_WIDTH,(float)SDLProperties.TARGET_HEIGHT}));
-
     // Load menu + fonts
     auto menu = std::make_unique<Menu>();
-
     // Game Level
     auto level = std::make_shared<Level>();
-
-    // Loads the following maps into memory
-    if (!level->ParseMaps(resources, "assets/levels/level01/maps.xml"))
-        std::cerr << "Failed to load maps.xml" << std::endl;
-
-    // Freely swap between loaded maps by setting the current map
-    level->SetMap("forest"); // TODO: Current map and above map file should be read from save file
-    level->SetMapChanged();
-
-    // Loads the following textures into memory
-    // TODO: Load entity textures from entity XML, not level XML
-    if (!resources->GetTextureManager()->ParseTextures(resources->GetEngine(), "assets/levels/level01/textures.xml"))
-        std::cerr << "Failed to load textures.xml" << std::endl;
+    // Camera
+    auto camera = std::make_shared<Camera>(SDLProperties);
+    resources->GetTextureManager()->SetCamera(camera);
+    // Player
+    std::shared_ptr<Entity> player;
+    // Entities
+    std::vector<std::shared_ptr<Entity>> entities;
 
     // Registers all entities into the factory map - SHOULD ONLY BE CALLED ONCE
     EntityCreator::GetInstance()->RegisterEntities();
 
-    // Storage of all entities currently created
-    auto player   = EntityCreator::GetInstance()->ParseEntity("assets/entities/player/player.xml", quadtree);
-    auto entities = EntityCreator::GetInstance()->ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
-    
-    // TODO: Put in/read from savefile
-    player->SetPosition(Vector2D(250.0f, 250.0f));
-    entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
-    entities.push_back(player);
-
-    // Camera & related setup
-    auto camera = std::make_shared<Camera>(SDLProperties);
-    camera->SetTarget(player->GetOrigin());
-    resources->GetTextureManager()->SetCamera(camera);
-
     while (resources->GetEngine()->IsRunning())
     {
+        // Clear window
+        SDL_SetRenderDrawColor(resources->GetEngine()->GetRenderer(), 0, 0, 0, 255);
+        SDL_RenderClear(resources->GetEngine()->GetRenderer());
+
         // Inputs
         resources->GetInputHandler()->Listen(resources->GetEngine());
         
         // Timing
         resources->GetEngine()->UpdateDeltaTime();
 
-        // Reset
+        // Reset quadtree
         if (resources->GetEngine()->GetState() == Engine::State::PLAY)
         {
-            // Quadtree reset
             quadtree->Clear();
             quadtree->SetBounds(camera);
         }
 
-        // Game loop
-        if (resources->GetEngine()->GetState() == Engine::State::PLAY || resources->GetEngine()->GetState() == Engine::State::GAMEOVER)
+        if (resources->GetEngine()->GetState() != Engine::State::MAINMENU)
         {
-            if (level->GetMapChanged())
+            // Game loop
+            if (resources->GetEngine()->GetState() != Engine::State::PAUSE)
             {
-                entities.clear();
-                entities = EntityCreator::GetInstance()->ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
-                
-                // TODO: Put in/read from file
-                if (entities.size() == 1) entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
-                if (level->GetMapName() == "forest") entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
-                else entities[0]->SetPosition(Vector2D(550.0f, 111.0f));
-                entities.push_back(player);
+                if (level->GetMapChanged())
+                {
+                    entities.clear();
+                    entities = EntityCreator::GetInstance()->ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
+                    
+                    // TODO: Put in/read from file
+                    if (entities.size() == 1) entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
+                    if (level->GetMapName() == "forest") entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
+                    else entities[0]->SetPosition(Vector2D(550.0f, 111.0f));
+                    entities.push_back(player);
+                    level->SetMapChanged();
+                }
+
+                // Quadtree fill
+                level->FillQuadtree(quadtree);
+                for (auto i : entities)
+                {
+                    quadtree->Insert(i);
+                }
+
+                // Update
+                for (auto i : entities)
+                {
+                    i->Update(resources);
+                }
+
+                // Check collisions
+                quadtree->CheckCollisions(level);
+
+                // Move camera
+                camera->Update(level->GetCurrentMap()->GetMapDimensions(), level->GetCurrentMap()->GetTileDimensions());
+
+                // Prepare entities for rendering
+                std::sort(entities.begin(), entities.end(), Entity::compareY);
+            }
+
+            // Render map layers under player
+            level->Render(resources, camera);
+
+            // Render
+            for (auto i : entities)
+            {
+                i->Render(resources);
+            }
+
+            // Render map layers over player
+            level->Render(resources, camera, false);
+
+            // Render debug overlay
+            if (resources->GetEngine()->GetDebugMode())
+            {
+                quadtree->DrawTree(resources, camera);
+            }
+
+            // In-game menu
+            if (resources->GetEngine()->GetState() == Engine::State::PAUSE)
+            {
+                menu->Pause(resources, SDLProperties);
+            }
+            else if (resources->GetEngine()->GetState() == Engine::State::GAMEOVER)
+            {
+                menu->GameOver(resources, SDLProperties);
+            }
+        }
+        else
+        {
+            // Main menu
+            menu->MainMenu(resources, SDLProperties);
+
+            if (resources->GetEngine()->GetState() == Engine::State::PLAY)
+            {
+                // Loads the following maps into memory
+                if (!level->ParseMaps(resources, "assets/levels/level01/maps.xml"))
+                    std::cerr << "Failed to load maps.xml" << std::endl;
+
+                // Freely swap between loaded maps by setting the current map
+                level->SetMap("forest"); // TODO: Current map and above map file should be read from save file
                 level->SetMapChanged();
+
+                // Loads the following textures into memory
+                // TODO: Load entity textures from entity XML, not level XML
+                if (!resources->GetTextureManager()->ParseTextures(resources->GetEngine(), "assets/levels/level01/textures.xml"))
+                    std::cerr << "Failed to load textures.xml" << std::endl;
+
+                // Storage of all entities currently created
+                player   = EntityCreator::GetInstance()->ParseEntity("assets/entities/player/player.xml", quadtree);
+                entities = EntityCreator::GetInstance()->ParseEntities("assets/levels/level01/entities.xml", level->GetMapName(), quadtree);
+
+                // TODO: Put in/read from savefile
+                player->SetPosition(Vector2D(250.0f, 250.0f));
+                entities[0]->SetPosition(Vector2D(232.0f, 232.0f));
+                entities.push_back(player);
+
+                // Camera & related setup
+                camera->SetTarget(player->GetOrigin());
             }
-
-            // Quadtree fill
-            level->FillQuadtree(quadtree);
-            for (auto i : entities)
-            {
-                quadtree->Insert(i);
-            }
-
-            // Update
-            for (auto i : entities)
-            {
-                i->Update(resources);
-            }
-
-            // Check collisions
-            quadtree->CheckCollisions(level);
-
-            // Move camera
-            camera->Update(level->GetCurrentMap()->GetMapDimensions(), level->GetCurrentMap()->GetTileDimensions());
-
-            // Prepare entities for rendering
-            std::sort(entities.begin(), entities.end(), Entity::compareY);
         }
 
-        // Clear window
-        SDL_SetRenderDrawColor(resources->GetEngine()->GetRenderer(), 0, 0, 0, 255);
-        SDL_RenderClear(resources->GetEngine()->GetRenderer());
-
-        // Render map layers under player
-        level->Render(resources, camera);
-
-        // Render
-        for (auto i : entities)
-        {
-            i->Render(resources);
-        }
-
-        // Render map layers over player
-        level->Render(resources, camera, false);
-
-        // Render debug overlay
-        if (resources->GetEngine()->GetDebugMode())
-        {
-            quadtree->DrawTree(resources, camera);
-        }
-
-        // Menu
-        if (resources->GetEngine()->GetState() == Engine::State::PAUSE)
-        {
-            menu->Pause(resources, SDLProperties);
-        }
-        else if (resources->GetEngine()->GetState() == Engine::State::GAMEOVER)
-        {
-            menu->GameOver(resources, SDLProperties);
-        }
-        
+        // Output rendered image to screen
         SDL_RenderPresent(resources->GetEngine()->GetRenderer());
+
     }
 
     resources->GetTextureManager()->Clean();

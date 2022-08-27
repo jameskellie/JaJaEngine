@@ -14,7 +14,8 @@ public:
     {
         PLAY,
         PAUSE,
-        GAMEOVER
+        GAMEOVER,
+        MAINMENU
     };
 
 private:

@@ -21,7 +21,6 @@ void OldMan::CollisionReaction(std::shared_ptr<Level> level)
 {
     (void)level;
 
-    collisionLastFrame = true;
     Vector2D force = rigidBody->GetForce();
 
     if (collision->loadZone == "")
@@ -85,14 +84,9 @@ void OldMan::Update(std::shared_ptr<Resources> resources)
             rigidBody->RemoveForceY();
     }
 
-    if (!collisionLastFrame)
-    {
-        lastPos.x  = transform->x;
-        lastPos.y  = transform->y;
-        lastHitbox = hitbox;
-    }
-
-    collisionLastFrame = false;
+    lastPos.x  = transform->x;
+    lastPos.y  = transform->y;
+    lastHitbox = hitbox;
 
     transform->Translate(rigidBody->GetPosition());
 

@@ -20,6 +20,7 @@ public:
 
     void Pause   (std::shared_ptr<Resources> resources, const SDL_Properties &properties);
     void GameOver(std::shared_ptr<Resources> resources, const SDL_Properties &properties);
+    void MainMenu(std::shared_ptr<Resources> resources, const SDL_Properties &properties);
 
     // Getters
     // Must return a raw pointer for SDL Library functions

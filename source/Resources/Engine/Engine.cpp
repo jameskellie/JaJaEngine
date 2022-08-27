@@ -52,7 +52,7 @@ bool Engine::Initialise(const SDL_Properties &properties)
     previousTime = 0.0f;
     deltaTime    = 0.0f;
 
-    state          = State::PLAY;
+    state          = State::MAINMENU;
     debugMode      = false;
     return running = true;
 }
