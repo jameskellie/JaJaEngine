@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
     // Registers all entities into the factory map - SHOULD ONLY BE CALLED ONCE
     EntityCreator::GetInstance()->RegisterEntities();
 
+    // TODO: Put this in a class instead of having it all in main
     while (resources->GetEngine()->IsRunning())
     {
         // Clear window
@@ -124,6 +125,9 @@ int main(int argc, char *argv[])
             {
                 quadtree->DrawTree(resources, camera);
             }
+
+            // HUD - TODO: Make a class
+            menu->HUD(resources, player);
 
             // In-game menu
             if (resources->GetEngine()->GetState() == Engine::State::PAUSE)

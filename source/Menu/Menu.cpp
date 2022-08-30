@@ -1,5 +1,6 @@
 #include "Menu.h"
 
+#include "Entity.h"
 #include "Resources.h"
 
 #include "SDL/SDL_Properties.h"
@@ -21,12 +22,57 @@ Menu::Menu()
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create Font: %s", TTF_GetError());
         return;
     }
+
+    HUDText.reset(TTF_OpenFont("assets/fonts/pixel.ttf", 10));
+
+    if (HUDText == nullptr)
+    {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create Font: %s", TTF_GetError());
+        return;
+    }
 }
 
 Menu::~Menu()
 {
     pauseText.reset(nullptr);
     buttonText.reset(nullptr);
+    HUDText.reset(nullptr);
+}
+
+void Menu::HUD(std::shared_ptr<Resources> resources, std::shared_ptr<Entity> player)
+{
+    int health      = player->GetHealth();
+    SDL_Color white = {255, 255, 255};
+
+    // Variable to be reused for each item of text
+    SDL_Surface *surface;
+    SDL_Texture *texture;
+    int textW;
+    int textH;
+    SDL_Rect dstRect;
+
+    // HP text
+    surface = TTF_RenderText_Solid(GetHUDTextFont(), ("HP: " + std::to_string(health) + " / 100").c_str(), white);
+    texture = SDL_CreateTextureFromSurface(resources->GetEngine()->GetRenderer(), surface);
+    textW   = 0;
+    textH   = 0;
+    SDL_QueryTexture(texture, NULL, NULL, &textW, &textH);
+    dstRect = {static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_WIDTH - surface->w) * 0.06), static_cast<int>((resources->GetEngine()->GetProperties()->TARGET_HEIGHT - surface->h) * 0.9), textW, textH};
+    SDL_RenderCopy(resources->GetEngine()->GetRenderer(), texture, NULL, &dstRect);
+
+    // Background
+    SDL_SetRenderDrawColor(resources->GetEngine()->GetRenderer(), 175, 175, 175, 175);
+    SDL_FRect rect;
+    rect.x = static_cast<int>(resources->GetEngine()->GetProperties()->TARGET_WIDTH * 0.05);
+    rect.y = static_cast<int>(resources->GetEngine()->GetProperties()->TARGET_HEIGHT * 0.9);
+    rect.w = 100; // TODO: Don't hard-code max health
+    rect.h = 10;
+    SDL_RenderFillRectF(resources->GetEngine()->GetRenderer(), &rect);
+
+    // Health bar
+    SDL_SetRenderDrawColor(resources->GetEngine()->GetRenderer(), 255, 0, 0, 255);
+    rect.w = health;
+    SDL_RenderFillRectF(resources->GetEngine()->GetRenderer(), &rect);
 }
 
 void Menu::Pause(std::shared_ptr<Resources> resources)

@@ -5,6 +5,7 @@ add_library(Menu
 
 target_link_libraries(Menu
     PUBLIC
+    Entity
     Resources
 )
 
